@@ -1,0 +1,18 @@
+{
+  "policy_version": "1.0",
+  "allowed_modes": [
+    "plan",
+    "install"
+  ],
+  "deny_missing_source": true,
+  "allowed_roots": [
+    "incoming",
+    "staging",
+    "reports"
+  ],
+  "blocked_suffixes": [
+    ".exe",
+    ".dll",
+    ".so"
+  ]
+}
