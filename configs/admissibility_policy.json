@@ -1,0 +1,22 @@
+{
+  "policy_version": "1.0",
+  "allowed_transitions": {
+    "plan": [
+      "artifact_ingestion",
+      "configuration_change",
+      "documentation_change",
+      "policy_change",
+      "unknown_mutation"
+    ],
+    "install": [
+      "artifact_ingestion",
+      "configuration_change",
+      "documentation_change"
+    ]
+  },
+  "blocked_sources_containing": [
+    ".git/",
+    ".gitmodules",
+    ".gitconfig"
+  ]
+}
