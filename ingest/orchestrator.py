@@ -31,8 +31,14 @@ def prepare_targets(target_names: list[str], work_root: Path):
 
 def orchestrate_plan(source_dir: Path, target_names: list[str], work_root: Path):
     prepared = prepare_targets(target_names, work_root)
-    return [build_plan(source_dir, item["dir"], item["config"]["allowed_prefixes"], name) for name, item in prepared.items()]
+    return [
+        build_plan(source_dir, item["dir"], item["config"]["allowed_prefixes"], name)
+        for name, item in prepared.items()
+    ]
 
 def orchestrate_install(source_dir: Path, target_names: list[str], work_root: Path, archive_root: Path, archive: bool):
     prepared = prepare_targets(target_names, work_root)
-    return [install_files(source_dir, item["dir"], item["config"]["allowed_prefixes"], archive, archive_root, name) for name, item in prepared.items()]
+    return [
+        install_files(source_dir, item["dir"], item["config"]["allowed_prefixes"], archive, archive_root, name)
+        for name, item in prepared.items()
+    ]
