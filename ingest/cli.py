@@ -17,6 +17,9 @@ from .entity_runtime import resolve_entities, reports_root_for_entity
 from .cross_entity_compare import compare_entities, write_comparison_reports
 from .replay import replay_reports, write_replay_reports
 from .convergence import analyze_convergence, write_convergence_reports
+from .perturbation import apply_perturbation, write_perturbation_receipt
+from .recovery import apply_recovery, write_recovery_receipt
+from .wall_control import evaluate_interactions, write_interaction_reports
 
 ROOT = Path(".").resolve()
 
@@ -72,6 +75,12 @@ def run_for_entity(source: Path, mode: str, entity_name: str):
         "admissibility_receipt": admissibility_receipt,
     }
 
+    perturbation_receipt = apply_perturbation(entity_name, report, mutation_receipt, governance_receipt)
+    write_perturbation_receipt(reports_root, perturbation_receipt)
+
+    recovery_receipt = apply_recovery(ROOT, entity_name)
+    write_recovery_receipt(reports_root, recovery_receipt)
+
     receipt = write_receipts(reports_root, report, source)
     state_record = append_state(reports_root, receipt, report)
     write_summary(reports_root, receipt, state_record, report)
@@ -88,6 +97,8 @@ def run_for_entity(source: Path, mode: str, entity_name: str):
         "allowed": allowed,
         "verification_status": verification_result["status"],
         "replay_status": replay_result["status"],
+        "perturbed": perturbation_receipt.get("perturbation_enabled", False),
+        "recovered": recovery_receipt.get("recovered", False),
     }
 
 def main():
@@ -110,6 +121,12 @@ def main():
         write_convergence_reports(ROOT, convergence)
         print(f"Cross-entity convergence computed: replay={convergence['replay_converged']} state={convergence['state_hash_converged']} overall={convergence['overall_converged']}")
 
+        interaction_receipt = evaluate_interactions(ROOT, entities)
+        write_interaction_reports(ROOT, interaction_receipt)
+        allowed_edges = sum(1 for e in interaction_receipt["edges"] if e["permitted"])
+        blocked_edges = sum(1 for e in interaction_receipt["edges"] if not e["permitted"])
+        print(f"Interaction policy evaluated: allowed_edges={allowed_edges} blocked_edges={blocked_edges}")
+
     for result in results:
         if result["allowed"]:
             print(f"Entity {result['entity']}: Ingestion complete")
@@ -117,6 +134,10 @@ def main():
             print(f"Entity {result['entity']}: Ingestion denied by governance or admissibility policy")
         print(f"Entity {result['entity']}: Independent verification {result['verification_status']}")
         print(f"Entity {result['entity']}: Deterministic replay {result['replay_status']}")
+        if result["perturbed"]:
+            print(f"Entity {result['entity']}: Perturbation applied")
+        if result["recovered"]:
+            print(f"Entity {result['entity']}: Recovery applied")
 
 if __name__ == "__main__":
     main()
