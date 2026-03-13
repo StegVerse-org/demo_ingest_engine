@@ -1,39 +1,7 @@
 {
   "repos": {
-    "stegverse-demo-suite": {
-      "clone_url": "https://github.com/StegVerse-org/stegverse-demo-suite.git",
-      "default_branch": "main",
-      "allowed_prefixes": [
-        "docs/",
-        "engine/",
-        "workflow/",
-        "theory/",
-        ".github/",
-        "README.md",
-        "stegverse",
-        "stegverse.cmd",
-        "LICENSE",
-        "ARTIFACT_EVALUATION.md",
-        "REPRODUCIBILITY.md"
-      ]
-    },
-    "demo_suite_runner": {
-      "clone_url": "https://github.com/StegVerse-org/demo_suite_runner.git",
-      "default_branch": "main",
-      "allowed_prefixes": [
-        "runner/",
-        "configs/",
-        "scripts/",
-        "reports/",
-        "runs/",
-        ".github/",
-        "README.md",
-        "requirements.txt",
-        "LICENSE",
-        "ARTIFACT_EVALUATION.md"
-      ]
-    },
     "demo_ingest_engine": {
+      "repo_slug": "demo_ingest_engine",
       "clone_url": "https://github.com/StegVerse-org/demo_ingest_engine.git",
       "default_branch": "main",
       "allowed_prefixes": [
@@ -50,17 +18,60 @@
         "LICENSE",
         "ARTIFACT_EVALUATION.md"
       ]
+    },
+    "demo_suite_runner": {
+      "repo_slug": "demo-suite-runner",
+      "clone_url": "https://github.com/StegVerse-org/demo-suite-runner.git",
+      "default_branch": "main",
+      "allowed_prefixes": [
+        "runner/",
+        "configs/",
+        "scripts/",
+        "reports/",
+        "runs/",
+        ".github/",
+        "README.md",
+        "requirements.txt",
+        "LICENSE",
+        "ARTIFACT_EVALUATION.md"
+      ]
+    },
+    "stegverse_demo_suite": {
+      "repo_slug": "stegverse-demo-suite",
+      "clone_url": "https://github.com/StegVerse-org/stegverse-demo-suite.git",
+      "default_branch": "main",
+      "allowed_prefixes": [
+        "docs/",
+        "engine/",
+        "workflow/",
+        "theory/",
+        ".github/",
+        "README.md",
+        "stegverse",
+        "stegverse.cmd",
+        "LICENSE",
+        "ARTIFACT_EVALUATION.md",
+        "REPRODUCIBILITY.md"
+      ]
     }
+  },
+  "repo_aliases": {
+    "demo_ingest_engine": "demo_ingest_engine",
+    "demo-ingest-engine": "demo_ingest_engine",
+    "demo_suite_runner": "demo_suite_runner",
+    "demo-suite-runner": "demo_suite_runner",
+    "stegverse_demo_suite": "stegverse_demo_suite",
+    "stegverse-demo-suite": "stegverse_demo_suite"
   },
   "target_sets": {
     "all": [
-      "stegverse-demo-suite",
+      "demo_ingest_engine",
       "demo_suite_runner",
-      "demo_ingest_engine"
+      "stegverse_demo_suite"
     ],
     "runtime_stack": [
-      "stegverse-demo-suite",
-      "demo_suite_runner"
+      "demo_suite_runner",
+      "stegverse_demo_suite"
     ]
   }
 }
