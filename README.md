@@ -4,19 +4,16 @@
 ![Python](https://img.shields.io/badge/python-3.11-blue)
 ![License](https://img.shields.io/github/license/StegVerse-org/demo_ingest_engine)
 
-Release: v1.1.0  
+Release: v1.2.0  
 Targets: stegverse-demo-suite, demo_suite_runner, demo_ingest_engine
 
 Phone-first ingestion and orchestration engine for installing StegVerse demo bundles directly from GitHub Actions.
 
-## What changed in this version
+## New in this release
 
+- manifest-aware bundles
+- automatic target resolution
 - plan mode
 - multi-repo orchestration
-- target-set support
 - per-target reports
-- updated target repo snapshots
-
-## Workflow use
-
-Upload a bundle into `incoming/`, then run `Actions → Run Ingestion`.
+- updated target snapshots
