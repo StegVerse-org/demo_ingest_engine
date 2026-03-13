@@ -3,6 +3,7 @@ import argparse
 from pathlib import Path
 from .receipt import write_receipts
 from .state_graph import append_state
+from .summary import write_summary
 
 ROOT = Path(".").resolve()
 
@@ -32,11 +33,13 @@ def main():
     }
 
     receipt = write_receipts(reports_root, report, source)
-    append_state(reports_root, receipt, report)
+    state_record = append_state(reports_root, receipt, report)
+    write_summary(reports_root, receipt, state_record, report)
 
     print("Ingestion complete")
     print("Execution receipts generated")
     print("State graph updated")
+    print("Summary report generated")
 
 if __name__ == "__main__":
     main()
