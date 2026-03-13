@@ -3,10 +3,25 @@ name: Run Ingestion
 on:
   workflow_dispatch:
     inputs:
-      target_repo:
-        description: Target repository
+      mode:
+        description: plan | install | orchestrate
         required: true
-        default: stegverse-demo-suite
+        type: choice
+        options:
+          - plan
+          - install
+          - orchestrate
+      source_path:
+        description: path inside incoming/
+        required: true
+        default: incoming/bundle.zip
+      conflict_mode:
+        description: replace or archive
+        required: true
+        type: choice
+        options:
+          - replace
+          - archive
 
 jobs:
   ingest:
@@ -24,6 +39,33 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Run ingestion placeholder
+      - name: Run ingestion
         run: |
-          echo "Ingestion engine workflow triggered"
+          if [ "${{ inputs.mode }}" = "plan" ]; then
+            python -m ingest.cli plan "${{ inputs.source_path }}"
+          fi
+
+          if [ "${{ inputs.mode }}" = "install" ]; then
+            if [ "${{ inputs.conflict_mode }}" = "archive" ]; then
+              python -m ingest.cli install "${{ inputs.source_path }}" --archive
+            else
+              python -m ingest.cli install "${{ inputs.source_path }}"
+            fi
+          fi
+
+          if [ "${{ inputs.mode }}" = "orchestrate" ]; then
+            if [ "${{ inputs.conflict_mode }}" = "archive" ]; then
+              python -m ingest.cli orchestrate "${{ inputs.source_path }}" --archive
+            else
+              python -m ingest.cli orchestrate "${{ inputs.source_path }}"
+            fi
+          fi
+
+      - name: Upload reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: ingest-output
+          path: |
+            reports/
+            updated_targets/
+            deprecated/
