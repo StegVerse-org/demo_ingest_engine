@@ -1,0 +1,14 @@
+{
+  "required_fields": [
+    "bundle_name",
+    "bundle_version"
+  ],
+  "optional_fields": [
+    "source_repo",
+    "target_repos",
+    "target_set",
+    "conflict_mode",
+    "apply_mode",
+    "notes"
+  ]
+}
