@@ -1,0 +1,30 @@
+{
+  "profiles": {
+    "demo": {
+      "experiment": false,
+      "stress_test": false,
+      "policy_surface": false,
+      "phase_diagram": false,
+      "adversarial": false,
+      "paper_reports": false,
+      "coordinated_batch": false,
+      "unified_verify": false,
+      "actuation_plan": false,
+      "visuals": false,
+      "full_verify": false
+    },
+    "research": {
+      "experiment": true,
+      "stress_test": true,
+      "policy_surface": true,
+      "phase_diagram": true,
+      "adversarial": true,
+      "paper_reports": true,
+      "coordinated_batch": true,
+      "unified_verify": true,
+      "actuation_plan": true,
+      "visuals": true,
+      "full_verify": true
+    }
+  }
+}
