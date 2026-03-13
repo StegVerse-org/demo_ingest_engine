@@ -1,5 +1,7 @@
 # StegVerse Demo Ingestion Engine
 
+![Ingest](https://github.com/StegVerse-org/demo_ingest_engine/actions/workflows/run-ingest.yml/badge.svg)
+
 Phone‑first ingestion system for installing StegVerse bundle updates into:
 
 • stegverse-demo-suite  
