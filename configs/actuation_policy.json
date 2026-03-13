@@ -1,0 +1,6 @@
+{
+  "policy_version": "1.0",
+  "enabled": false,
+  "allowed_targets": [],
+  "mode": "artifact_only"
+}

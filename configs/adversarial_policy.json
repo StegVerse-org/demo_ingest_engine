@@ -1,0 +1,17 @@
+{
+  "policy_version": "1.0",
+  "enabled": true,
+  "seed": 42,
+  "trial_count": 25,
+  "candidate_modes": [
+    "plan",
+    "install"
+  ],
+  "candidate_mutation_types": [
+    "artifact_ingestion",
+    "configuration_change",
+    "documentation_change",
+    "policy_change",
+    "unknown_mutation"
+  ]
+}
