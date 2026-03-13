@@ -7,6 +7,9 @@ from .config import ROOT
 from .manifest import load_bundle_manifest, resolve_targets_from_manifest
 from .orchestrator import resolve_targets, orchestrate_plan, orchestrate_install
 from .report import write_json, write_markdown
+from .policy_loader import load_policy
+from .mutation_governance import evaluate_mutation
+from .receipt import write_receipts
 
 def parse_args():
     parser = argparse.ArgumentParser(description="StegVerse ingestion engine")
@@ -26,12 +29,13 @@ def main():
     work_root = ROOT / "updated_targets" / stamp
     archive_root = ROOT / "deprecated" / stamp
     reports_root = ROOT / "reports"
+
     source = Path(args.source).resolve()
     source_dir = extract_if_zip(source, staging_root)
     manifest = load_bundle_manifest(source_dir)
+
     target_repo = getattr(args, "target_repo", None)
     target_set = getattr(args, "target_set", None)
-
     if not target_repo and not target_set:
         resolved = resolve_targets_from_manifest(manifest)
         if isinstance(resolved, list):
@@ -43,17 +47,41 @@ def main():
     else:
         targets = resolve_targets(target_repo, target_set)
 
+    governance_receipt = None
+    if args.cmd in {"install", "orchestrate"}:
+        policy = load_policy()
+        governance_receipt = evaluate_mutation(source_dir, source, targets, policy, manifest)
+        write_json(reports_root / "governance_receipt.json", governance_receipt)
+        if not governance_receipt["mutation_authorized"]:
+            report = {
+                "mode": args.cmd,
+                "source": str(source),
+                "conflict_mode": "archive-and-replace" if getattr(args, "archive", False) else "replace",
+                "apply_mode": "artifact-only",
+                "bundle_manifest": manifest,
+                "governance_receipt": governance_receipt,
+                "targets": [{"repo": t, "added": [], "replaced": [], "skipped": [], "archived": []} for t in targets],
+            }
+            write_json(reports_root / "ingestion_report.json", report)
+            write_json(reports_root / "ingestion_plan.json", report)
+            write_markdown(reports_root / "ingestion_report.md", report)
+            write_receipts(reports_root, report, source, manifest, governance_receipt)
+            print("Mutation denied by governance policy")
+            print(f"Report: {reports_root / 'ingestion_report.md'}")
+            raise SystemExit(2)
+
     if args.cmd == "plan":
         result_targets = orchestrate_plan(source_dir, targets, work_root)
         report = {"mode":"plan","source":str(source),"conflict_mode":"none","apply_mode":"preview","bundle_manifest":manifest,"targets":result_targets}
     else:
         archive = getattr(args, "archive", False) or bool(manifest and manifest.get("conflict_mode") == "archive-and-replace")
         result_targets = orchestrate_install(source_dir, targets, work_root, archive_root, archive)
-        report = {"mode":args.cmd,"source":str(source),"conflict_mode":"archive-and-replace" if archive else "replace","apply_mode":"artifact-only","bundle_manifest":manifest,"targets":result_targets}
+        report = {"mode":args.cmd,"source":str(source),"conflict_mode":"archive-and-replace" if archive else "replace","apply_mode":"artifact-only","bundle_manifest":manifest,"governance_receipt":governance_receipt,"targets":result_targets}
 
     write_json(reports_root / "ingestion_report.json", report)
     write_json(reports_root / "ingestion_plan.json", report)
     write_markdown(reports_root / "ingestion_report.md", report)
+    write_receipts(reports_root, report, source, manifest, governance_receipt)
     print("Ingestion complete")
     print(f"Report: {reports_root / 'ingestion_report.md'}")
 
