@@ -1,0 +1,21 @@
+{
+  "policy_version": "1.0",
+  "enabled": true,
+  "scenarios": [
+    {
+      "name": "strict_install",
+      "override_mode": "install",
+      "deny_mutation_types": [
+        "unknown_mutation",
+        "policy_change"
+      ],
+      "label": "Stricter install boundary"
+    },
+    {
+      "name": "lenient_plan",
+      "override_mode": "plan",
+      "allow_all_mutation_types": true,
+      "label": "Lenient observational mode"
+    }
+  ]
+}
