@@ -9,8 +9,11 @@ def install_files(source_dir: Path, target_repo: Path, allowed_prefixes: list[st
     added, replaced, skipped, archived = [], [], [], []
     for rel in rels:
         rel_str = rel.as_posix()
+        if rel_str == "BUNDLE_MANIFEST.json":
+            continue
         if not is_allowed(rel_str, allowed_prefixes):
-            skipped.append(rel_str); continue
+            skipped.append(rel_str)
+            continue
         src = real_source / rel
         dest = target_repo / rel
         dest.parent.mkdir(parents=True, exist_ok=True)

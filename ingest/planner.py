@@ -8,8 +8,11 @@ def build_plan(source_dir: Path, target_repo: Path, allowed_prefixes: list[str],
     added, replaced, skipped = [], [], []
     for rel in rels:
         rel_str = rel.as_posix()
+        if rel_str == "BUNDLE_MANIFEST.json":
+            continue
         if not is_allowed(rel_str, allowed_prefixes):
-            skipped.append(rel_str); continue
+            skipped.append(rel_str)
+            continue
         dest = target_repo / rel
         if dest.exists():
             replaced.append(rel_str)
