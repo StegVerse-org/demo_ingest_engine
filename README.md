@@ -1,61 +1,22 @@
 # StegVerse Demo Ingestion Engine
 
-![Release](https://img.shields.io/github/v/release/StegVerse-org/stegverse-demo-suite)
-![CI](https://img.shields.io/github/actions/workflow/status/StegVerse-org/demo-suite-runner/run-demo.yml)
+![Run Ingestion](https://github.com/StegVerse-org/demo_ingest_engine/actions/workflows/run-ingest.yml/badge.svg)
 ![Python](https://img.shields.io/badge/python-3.11-blue)
-![License](https://img.shields.io/github/license/StegVerse-org/stegverse-demo-suite)
+![License](https://img.shields.io/github/license/StegVerse-org/demo_ingest_engine)
 
-Phone‑first ingestion system for installing StegVerse bundle updates into:
+Release: v1.1.0  
+Targets: stegverse-demo-suite, demo_suite_runner, demo_ingest_engine
 
-• stegverse-demo-suite  
-• demo_suite_runner  
+Phone-first ingestion and orchestration engine for installing StegVerse demo bundles directly from GitHub Actions.
 
-This repo supports **GitHub‑workflow driven installs**, meaning you can upload
-bundles from an iPhone and run ingestion directly from the Actions tab.
+## What changed in this version
 
-## Workflow Use (Recommended)
+- plan mode
+- multi-repo orchestration
+- target-set support
+- per-target reports
+- updated target repo snapshots
 
-1. Upload bundle to:
+## Workflow use
 
-```
-incoming/
-```
-
-2. Open **Actions → Run Ingestion**
-
-3. Select:
-
-```
-target_repo
-source_type
-source_path
-conflict_mode
-```
-
-4. Run workflow
-
-Outputs:
-
-• ingestion report  
-• updated repo snapshot  
-• deprecated archive (if used)
-
-Artifacts appear in the workflow run.
-
-## CLI (optional)
-
-```
-python ingest/cli.py install bundle.zip --target ../stegverse-demo-suite --archive
-```
-
-## Structure
-
-```
-incoming/           uploaded bundles
-staging/            temporary extraction
-reports/            ingestion reports
-deprecated/         archived replaced files
-updated_targets/    final repo snapshot
-```
-
-This engine removes manual file movement entirely.
+Upload a bundle into `incoming/`, then run `Actions → Run Ingestion`.
