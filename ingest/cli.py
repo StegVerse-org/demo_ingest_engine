@@ -27,6 +27,7 @@ from .provenance_chain import append_provenance_step, verify_provenance_chain, w
 from .guardian_runtime import load_guardian_policy, evaluate_guardian_boundary, write_guardian_reports
 from .experiment_runner import run_governance_experiment, write_experiment_reports
 from .shadow_policy import load_shadow_policy, evaluate_shadow_scenarios, write_shadow_reports
+from .stress_tester import load_stress_policy, run_stress_trials, write_stress_reports
 
 ROOT = Path(".").resolve()
 
@@ -40,6 +41,7 @@ def parse_args():
     p.add_argument("--all-entities", action="store_true")
     p.add_argument("--experiment", action="store_true")
     p.add_argument("--trials", type=int, default=1)
+    p.add_argument("--stress-test", action="store_true")
 
     i = sub.add_parser("install")
     i.add_argument("source")
@@ -47,6 +49,7 @@ def parse_args():
     i.add_argument("--all-entities", action="store_true")
     i.add_argument("--experiment", action="store_true")
     i.add_argument("--trials", type=int, default=1)
+    i.add_argument("--stress-test", action="store_true")
 
     return parser.parse_args()
 
@@ -185,6 +188,15 @@ def main():
         experiment = run_governance_experiment(ROOT, results, max(1, getattr(args, "trials", 1)))
         write_experiment_reports(ROOT, experiment)
         print(f"Experiment runner complete: trials={experiment['trial_count']} verification_rate={experiment['verification_rate']:.2f} replay_rate={experiment['replay_rate']:.2f}")
+
+    if getattr(args, "stress_test", False):
+        governance_policy = load_policy(ROOT / "configs" / "governance_policy.json")
+        admissibility_policy = load_admissibility_policy(ROOT / "configs" / "admissibility_policy.json")
+        guardian_policy = load_guardian_policy(ROOT / "configs" / "guardian_policy.json")
+        stress_policy = load_stress_policy(ROOT / "configs" / "stress_test_policy.json")
+        stress_results = run_stress_trials(stress_policy, governance_policy, admissibility_policy, guardian_policy)
+        write_stress_reports(ROOT / "reports", stress_results)
+        print(f"Stress test complete: trials={stress_results['trial_count']} allow_rate={stress_results['allow_rate']:.2f} deny_rate={stress_results['deny_rate']:.2f}")
 
     for result in results:
         if result["allowed"]:
