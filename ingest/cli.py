@@ -20,6 +20,7 @@ from .convergence import analyze_convergence, write_convergence_reports
 from .perturbation import apply_perturbation, write_perturbation_receipt
 from .recovery import apply_recovery, write_recovery_receipt
 from .wall_control import evaluate_interactions, write_interaction_reports
+from .event_bus import emit_interaction_events, write_event_bus_reports
 
 ROOT = Path(".").resolve()
 
@@ -126,6 +127,10 @@ def main():
         allowed_edges = sum(1 for e in interaction_receipt["edges"] if e["permitted"])
         blocked_edges = sum(1 for e in interaction_receipt["edges"] if not e["permitted"])
         print(f"Interaction policy evaluated: allowed_edges={allowed_edges} blocked_edges={blocked_edges}")
+
+        event_log = emit_interaction_events(ROOT, entities, interaction_receipt)
+        write_event_bus_reports(ROOT, event_log)
+        print(f"Event bus emitted: count={event_log['event_count']}")
 
     for result in results:
         if result["allowed"]:
