@@ -35,6 +35,11 @@ from .policy_conflicts import analyze_policy_conflicts, write_policy_conflict_re
 from .unified_verifier import verify_unified_provenance, write_unified_verification_reports
 from .recovery_metrics import compute_recovery_metrics, write_recovery_metrics_reports
 from .actuation_scaffold import load_actuation_policy, build_actuation_plan, write_actuation_reports
+from .governance_visuals import build_governance_visuals
+from .full_system_verifier import run_full_system_verification, write_full_system_verification
+from .run_profile import load_run_profiles, apply_profile, write_run_profile_report
+from .report_index import build_report_index, write_report_index
+from .runtime_manifest import write_runtime_manifest
 
 ROOT = Path(".").resolve()
 
@@ -56,6 +61,9 @@ def parse_args():
         p.add_argument("--coordinated-batch", action="store_true")
         p.add_argument("--unified-verify", action="store_true")
         p.add_argument("--actuation-plan", action="store_true")
+        p.add_argument("--visuals", action="store_true")
+        p.add_argument("--full-verify", action="store_true")
+        p.add_argument("--profile", choices=["demo", "research"], default=None)
     return parser.parse_args()
 
 def run_for_entity(source: Path, mode: str, entity_name: str):
@@ -85,8 +93,30 @@ def run_for_entity(source: Path, mode: str, entity_name: str):
 def main():
     args = parse_args()
     source = Path(args.source).resolve()
+
+    if args.profile:
+        profiles = load_run_profiles(ROOT / "configs" / "run_profiles.json")
+        applied = apply_profile(args, args.profile, profiles)
+        write_run_profile_report(ROOT / "reports", args.profile, applied)
+
     entities = resolve_entities(ROOT, entity=getattr(args, "entity", None), all_entities=getattr(args, "all_entities", False))
     results = [run_for_entity(source, args.cmd, entity_name) for entity_name in entities]
+
+    flags = {
+        "experiment": args.experiment,
+        "stress_test": args.stress_test,
+        "policy_surface": args.policy_surface,
+        "phase_diagram": args.phase_diagram,
+        "adversarial": args.adversarial,
+        "paper_reports": args.paper_reports,
+        "coordinated_batch": args.coordinated_batch,
+        "unified_verify": args.unified_verify,
+        "actuation_plan": args.actuation_plan,
+        "visuals": args.visuals,
+        "full_verify": args.full_verify,
+        "profile": args.profile,
+    }
+    write_runtime_manifest(ROOT / "reports", args.cmd, source, entities, flags)
 
     governance_policy = load_policy(ROOT / "configs" / "governance_policy.json")
     admissibility_policy = load_admissibility_policy(ROOT / "configs" / "admissibility_policy.json")
@@ -143,8 +173,19 @@ def main():
         unified = verify_unified_provenance(ROOT); write_unified_verification_reports(ROOT / "reports", unified); print(f"Unified provenance verification {unified['status']}")
 
     if getattr(args, "actuation_plan", False):
-        act_policy = load_actuation_policy(ROOT / "configs" / "actuation_policy.json")
-        act_plan = build_actuation_plan(source, entities, act_policy); write_actuation_reports(ROOT / "reports", act_plan); print(f"Actuation plan generated: actions={len(act_plan['actions'])} enabled={act_plan['enabled']}")
+        act_policy = load_actuation_policy(ROOT / "configs" / "actuation_policy.json"); act_plan = build_actuation_plan(source, entities, act_policy); write_actuation_reports(ROOT / "reports", act_plan); print(f"Actuation plan generated: actions={len(act_plan['actions'])} enabled={act_plan['enabled']}")
+
+    if getattr(args, "visuals", False):
+        visuals = build_governance_visuals(ROOT / "reports")
+        print(f"Visualizations generated: count={len(visuals['generated_files'])}")
+
+    if getattr(args, "full_verify", False):
+        full = run_full_system_verification(ROOT / "reports")
+        write_full_system_verification(ROOT / "reports", full)
+        print(f"Full system verification {full['status']}")
+
+    index_data = build_report_index(ROOT / "reports")
+    write_report_index(ROOT / "reports", index_data)
 
     for result in results:
         if result["allowed"]: print(f"Entity {result['entity']}: Ingestion complete")
