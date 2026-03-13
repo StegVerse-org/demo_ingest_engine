@@ -1,26 +1,21 @@
 {
   "policy_version": "1.0",
-  "execution_modes_touching_reality": [
-    "install"
-  ],
-  "high_sensitivity_roots": [
-    "incoming",
-    "entities",
-    "configs"
-  ],
-  "blocked_suffixes": [
-    ".exe",
-    ".dll",
-    ".so"
-  ],
-  "boundary_actions": {
-    "plan": "observe_only",
-    "install": "mutation_boundary"
-  },
-  "guardian_rules": {
-    "deny_if_blocked_suffix": true,
-    "guard_high_sensitivity_install": true,
-    "allow_plan_mode": true
-  },
-  "notes": "Guardian boundary policy controlling mutations that touch system state or infrastructure."
+  "enabled": true,
+  "scenarios": [
+    {
+      "name": "strict_install",
+      "override_mode": "install",
+      "deny_mutation_types": [
+        "unknown_mutation",
+        "policy_change"
+      ],
+      "label": "Stricter install boundary"
+    },
+    {
+      "name": "lenient_plan",
+      "override_mode": "plan",
+      "allow_all_mutation_types": true,
+      "label": "Lenient observational mode"
+    }
+  ]
 }
