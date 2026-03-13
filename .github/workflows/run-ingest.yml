@@ -1,0 +1,29 @@
+name: Run Ingestion
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_repo:
+        description: Target repository
+        required: true
+        default: stegverse-demo-suite
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout ingestion engine
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run ingestion placeholder
+        run: |
+          echo "Ingestion engine workflow triggered"
