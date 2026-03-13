@@ -40,6 +40,13 @@ from .full_system_verifier import run_full_system_verification, write_full_syste
 from .run_profile import load_run_profiles, apply_profile, write_run_profile_report
 from .report_index import build_report_index, write_report_index
 from .runtime_manifest import write_runtime_manifest
+from .runtime_capabilities import detect_capabilities, write_capability_reports, write_stage_status
+from .publication_pack import (
+    build_publication_summary,
+    write_publication_summary,
+    build_demo_packet,
+    write_demo_packet_report,
+)
 
 ROOT = Path(".").resolve()
 
@@ -64,7 +71,24 @@ def parse_args():
         p.add_argument("--visuals", action="store_true")
         p.add_argument("--full-verify", action="store_true")
         p.add_argument("--profile", choices=["demo", "research"], default=None)
+        p.add_argument("--publication-pack", action="store_true")
     return parser.parse_args()
+
+def _run_optional_stage(reports_root: Path, stage_name: str, fn):
+    try:
+        result = fn()
+        write_stage_status(reports_root, stage_name, "PASS", "stage completed")
+        return result
+    except Exception as e:
+        write_stage_status(
+            reports_root,
+            stage_name,
+            "SOFT_FAIL",
+            str(e),
+            extra={"exception_type": type(e).__name__},
+        )
+        print(f"{stage_name} soft-failed: {type(e).__name__}: {e}")
+        return None
 
 def run_for_entity(source: Path, mode: str, entity_name: str):
     reports_root = reports_root_for_entity(ROOT, entity_name)
@@ -93,11 +117,16 @@ def run_for_entity(source: Path, mode: str, entity_name: str):
 def main():
     args = parse_args()
     source = Path(args.source).resolve()
+    reports_root = ROOT / "reports"
+    reports_root.mkdir(parents=True, exist_ok=True)
+
+    capabilities = detect_capabilities()
+    write_capability_reports(reports_root, capabilities)
 
     if args.profile:
         profiles = load_run_profiles(ROOT / "configs" / "run_profiles.json")
         applied = apply_profile(args, args.profile, profiles)
-        write_run_profile_report(ROOT / "reports", args.profile, applied)
+        write_run_profile_report(reports_root, args.profile, applied)
 
     entities = resolve_entities(ROOT, entity=getattr(args, "entity", None), all_entities=getattr(args, "all_entities", False))
     results = [run_for_entity(source, args.cmd, entity_name) for entity_name in entities]
@@ -114,9 +143,10 @@ def main():
         "actuation_plan": args.actuation_plan,
         "visuals": args.visuals,
         "full_verify": args.full_verify,
+        "publication_pack": args.publication_pack,
         "profile": args.profile,
     }
-    write_runtime_manifest(ROOT / "reports", args.cmd, source, entities, flags)
+    write_runtime_manifest(reports_root, args.cmd, source, entities, flags)
 
     governance_policy = load_policy(ROOT / "configs" / "governance_policy.json")
     admissibility_policy = load_admissibility_policy(ROOT / "configs" / "admissibility_policy.json")
@@ -128,11 +158,11 @@ def main():
     adversarial_eval = None
 
     manifest = build_experiment_manifest(args.cmd, entities, max(1, getattr(args, "trials", 1)), getattr(args, "stress_test", False), getattr(args, "policy_surface", False), getattr(args, "phase_diagram", False))
-    write_experiment_manifest(ROOT / "reports", manifest)
+    write_experiment_manifest(reports_root, manifest)
 
     if getattr(args, "coordinated_batch", False):
         batch = build_coordinated_batch(args.cmd, entities, "governance_batch", max(1, getattr(args, "trials", 1)))
-        write_coordinated_batch(ROOT / "reports", batch)
+        write_coordinated_batch(reports_root, batch)
         print(f"Coordinated batch generated: steps={len(batch['steps'])}")
 
     if len(entities) > 1:
@@ -141,51 +171,61 @@ def main():
         interaction_receipt = evaluate_interactions(ROOT, entities); write_interaction_reports(ROOT, interaction_receipt)
         allowed_edges = sum(1 for e in interaction_receipt["edges"] if e["permitted"]); blocked_edges = sum(1 for e in interaction_receipt["edges"] if not e["permitted"]); print(f"Interaction policy evaluated: allowed_edges={allowed_edges} blocked_edges={blocked_edges}")
         event_log = emit_interaction_events(ROOT, entities, interaction_receipt); write_event_bus_reports(ROOT, event_log); print(f"Event bus emitted: count={event_log['event_count']}")
-        event_replay_result = replay_event_log(ROOT / "reports"); write_event_replay_reports(ROOT / "reports", event_replay_result); print(f"Event replay {event_replay_result['status']}")
+        event_replay_result = replay_event_log(reports_root); write_event_replay_reports(reports_root, event_replay_result); print(f"Event replay {event_replay_result['status']}")
         ledger_batch = append_event_ledger(ROOT, event_log); ledger_verification = verify_event_ledger(ROOT); write_event_ledger_reports(ROOT, ledger_batch, ledger_verification); print(f"Event ledger {ledger_verification['status']} batch={ledger_batch['batch_id']}")
         provenance_step = append_provenance_step(ROOT); provenance_verification = verify_provenance_chain(ROOT); write_provenance_reports(ROOT, provenance_step, provenance_verification); print(f"Provenance chain {provenance_verification['status']} step={provenance_step['step_id']}")
-        conflicts = analyze_policy_conflicts(ROOT, entities); write_policy_conflict_reports(ROOT / "reports", conflicts); print(f"Policy conflicts analyzed: count={conflicts['conflict_count']}")
-        recovery = compute_recovery_metrics(ROOT, entities); write_recovery_metrics_reports(ROOT / "reports", recovery); print(f"Recovery metrics generated: rate={recovery['recovery_rate']:.2f}")
+        conflicts = analyze_policy_conflicts(ROOT, entities); write_policy_conflict_reports(reports_root, conflicts); print(f"Policy conflicts analyzed: count={conflicts['conflict_count']}")
+        recovery = compute_recovery_metrics(ROOT, entities); write_recovery_metrics_reports(reports_root, recovery); print(f"Recovery metrics generated: rate={recovery['recovery_rate']:.2f}")
 
     if getattr(args, "experiment", False):
-        experiment = run_governance_experiment(ROOT, results, max(1, getattr(args, "trials", 1))); write_experiment_reports(ROOT, experiment); print(f"Experiment runner complete: trials={experiment['trial_count']} verification_rate={experiment['verification_rate']:.2f} replay_rate={experiment['replay_rate']:.2f}")
+        experiment = run_governance_experiment(ROOT, results, max(1, getattr(args, "trials", 1))); write_experiment_reports(reports_root, experiment); print(f"Experiment runner complete: trials={experiment['trial_count']} verification_rate={experiment['verification_rate']:.2f} replay_rate={experiment['replay_rate']:.2f}")
 
     if getattr(args, "stress_test", False):
-        stress_policy = load_stress_policy(ROOT / "configs" / "stress_test_policy.json"); stress_results = run_stress_trials(stress_policy, governance_policy, admissibility_policy, guardian_policy); write_stress_reports(ROOT / "reports", stress_results); print(f"Stress test complete: trials={stress_results['trial_count']} allow_rate={stress_results['allow_rate']:.2f} deny_rate={stress_results['deny_rate']:.2f}")
+        stress_policy = load_stress_policy(ROOT / "configs" / "stress_test_policy.json"); stress_results = run_stress_trials(stress_policy, governance_policy, admissibility_policy, guardian_policy); write_stress_reports(reports_root, stress_results); print(f"Stress test complete: trials={stress_results['trial_count']} allow_rate={stress_results['allow_rate']:.2f} deny_rate={stress_results['deny_rate']:.2f}")
 
     if getattr(args, "policy_surface", False):
-        surface = build_policy_surface(governance_policy, admissibility_policy, guardian_policy); write_policy_surface_reports(ROOT / "reports", surface); print(f"Policy surface generated: modes={len(surface['modes'])} mutation_types={len(surface['mutation_types'])}")
+        surface = build_policy_surface(governance_policy, admissibility_policy, guardian_policy); write_policy_surface_reports(reports_root, surface); print(f"Policy surface generated: modes={len(surface['modes'])} mutation_types={len(surface['mutation_types'])}")
 
     if getattr(args, "phase_diagram", False):
         if surface is None: surface = build_policy_surface(governance_policy, admissibility_policy, guardian_policy)
-        phase = build_phase_diagram(surface, stress_results); write_phase_reports(ROOT / "reports", phase); print(f"Phase diagram generated: regions={len(phase['regions'])}")
+        phase = build_phase_diagram(surface, stress_results); write_phase_reports(reports_root, phase); print(f"Phase diagram generated: regions={len(phase['regions'])}")
 
     if getattr(args, "adversarial", False):
         adversarial_policy = load_adversarial_policy(ROOT / "configs" / "adversarial_policy.json")
-        generated = generate_adversarial_trials(adversarial_policy); adversarial_eval = evaluate_adversarial_trials(generated, governance_policy, admissibility_policy, guardian_policy); write_adversarial_reports(ROOT / "reports", generated, adversarial_eval); print(f"Adversarial mutations generated: trials={adversarial_eval['trial_count']} failure_zones={len(adversarial_eval['failure_zone_counts'])}")
+        generated = generate_adversarial_trials(adversarial_policy); adversarial_eval = evaluate_adversarial_trials(generated, governance_policy, admissibility_policy, guardian_policy); write_adversarial_reports(reports_root, generated, adversarial_eval); print(f"Adversarial mutations generated: trials={adversarial_eval['trial_count']} failure_zones={len(adversarial_eval['failure_zone_counts'])}")
 
     if getattr(args, "paper_reports", False):
         if surface is not None:
-            heatmap = build_stability_heatmap(surface, stress_results); write_heatmap_reports(ROOT / "reports", heatmap); print("Stability heatmap generated")
-        write_paper_ready_reports(ROOT / "reports", stress_results, phase, surface, adversarial_eval); print("Paper-ready reports generated")
+            heatmap = build_stability_heatmap(surface, stress_results); write_heatmap_reports(reports_root, heatmap); print("Stability heatmap generated")
+        write_paper_ready_reports(reports_root, stress_results, phase, surface, adversarial_eval); print("Paper-ready reports generated")
 
     if getattr(args, "unified_verify", False):
-        unified = verify_unified_provenance(ROOT); write_unified_verification_reports(ROOT / "reports", unified); print(f"Unified provenance verification {unified['status']}")
+        unified = verify_unified_provenance(ROOT); write_unified_verification_reports(reports_root, unified); print(f"Unified provenance verification {unified['status']}")
 
     if getattr(args, "actuation_plan", False):
-        act_policy = load_actuation_policy(ROOT / "configs" / "actuation_policy.json"); act_plan = build_actuation_plan(source, entities, act_policy); write_actuation_reports(ROOT / "reports", act_plan); print(f"Actuation plan generated: actions={len(act_plan['actions'])} enabled={act_plan['enabled']}")
+        act_policy = load_actuation_policy(ROOT / "configs" / "actuation_policy.json"); act_plan = build_actuation_plan(source, entities, act_policy); write_actuation_reports(reports_root, act_plan); print(f"Actuation plan generated: actions={len(act_plan['actions'])} enabled={act_plan['enabled']}")
 
     if getattr(args, "visuals", False):
-        visuals = build_governance_visuals(ROOT / "reports")
-        print(f"Visualizations generated: count={len(visuals['generated_files'])}")
+        visuals = _run_optional_stage(reports_root, "visuals", lambda: build_governance_visuals(reports_root))
+        if visuals is not None:
+            print(f"Visualizations generated: count={len(visuals['generated_files'])}")
 
     if getattr(args, "full_verify", False):
-        full = run_full_system_verification(ROOT / "reports")
-        write_full_system_verification(ROOT / "reports", full)
-        print(f"Full system verification {full['status']}")
+        full = _run_optional_stage(reports_root, "full_system_verification", lambda: run_full_system_verification(reports_root))
+        if full is not None:
+            write_full_system_verification(reports_root, full)
+            print(f"Full system verification {full['status']}")
 
-    index_data = build_report_index(ROOT / "reports")
-    write_report_index(ROOT / "reports", index_data)
+    if getattr(args, "publication_pack", False):
+        summary = build_publication_summary(reports_root)
+        write_publication_summary(reports_root, summary)
+        print(f"Publication summary generated: present={summary['present_count']} missing={summary['missing_count']}")
+        packet = build_demo_packet(reports_root)
+        write_demo_packet_report(reports_root, packet)
+        print(f"Demo packet generated: files={packet['file_count']} zip={packet['zip_name']}")
+
+    index_data = build_report_index(reports_root)
+    write_report_index(reports_root, index_data)
 
     for result in results:
         if result["allowed"]: print(f"Entity {result['entity']}: Ingestion complete")

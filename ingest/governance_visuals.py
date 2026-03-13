@@ -112,7 +112,7 @@ def build_governance_visuals(reports_root: Path) -> dict:
         lines.append("- none")
 
     (reports_root / "visualization_manifest.md").write_text(
-        "\\n".join(lines) + "\\n",
+        "\n".join(lines) + "\n",
         encoding="utf-8",
     )
 
