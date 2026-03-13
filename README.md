@@ -1,8 +1,9 @@
 # StegVerse Demo Ingestion Engine
 
-![Ingestion Workflow](https://github.com/StegVerse-org/demo_ingest_engine/actions/workflows/run-ingest.yml/badge.svg)
+![Release](https://img.shields.io/github/v/release/StegVerse-org/stegverse-demo-suite)
+![CI](https://img.shields.io/github/actions/workflow/status/StegVerse-org/demo-suite-runner/run-demo.yml)
 ![Python](https://img.shields.io/badge/python-3.11-blue)
-![License](https://img.shields.io/github/license/StegVerse-org/demo_ingest_engine)
+![License](https://img.shields.io/github/license/StegVerse-org/stegverse-demo-suite)
 
 Phone‑first ingestion system for installing StegVerse bundle updates into:
 
