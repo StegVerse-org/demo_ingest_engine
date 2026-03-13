@@ -21,6 +21,7 @@ from .perturbation import apply_perturbation, write_perturbation_receipt
 from .recovery import apply_recovery, write_recovery_receipt
 from .wall_control import evaluate_interactions, write_interaction_reports
 from .event_bus import emit_interaction_events, write_event_bus_reports
+from .event_replay import replay_event_log, write_event_replay_reports
 
 ROOT = Path(".").resolve()
 
@@ -131,6 +132,10 @@ def main():
         event_log = emit_interaction_events(ROOT, entities, interaction_receipt)
         write_event_bus_reports(ROOT, event_log)
         print(f"Event bus emitted: count={event_log['event_count']}")
+
+        event_replay_result = replay_event_log(ROOT / "reports")
+        write_event_replay_reports(ROOT / "reports", event_replay_result)
+        print(f"Event replay {event_replay_result['status']}")
 
     for result in results:
         if result["allowed"]:
