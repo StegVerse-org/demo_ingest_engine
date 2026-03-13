@@ -1,0 +1,66 @@
+{
+  "repos": {
+    "stegverse-demo-suite": {
+      "clone_url": "https://github.com/StegVerse-org/stegverse-demo-suite.git",
+      "default_branch": "main",
+      "allowed_prefixes": [
+        "docs/",
+        "engine/",
+        "workflow/",
+        "theory/",
+        ".github/",
+        "README.md",
+        "stegverse",
+        "stegverse.cmd",
+        "LICENSE",
+        "ARTIFACT_EVALUATION.md",
+        "REPRODUCIBILITY.md"
+      ]
+    },
+    "demo_suite_runner": {
+      "clone_url": "https://github.com/StegVerse-org/demo_suite_runner.git",
+      "default_branch": "main",
+      "allowed_prefixes": [
+        "runner/",
+        "configs/",
+        "scripts/",
+        "reports/",
+        "runs/",
+        ".github/",
+        "README.md",
+        "requirements.txt",
+        "LICENSE",
+        "ARTIFACT_EVALUATION.md"
+      ]
+    },
+    "demo_ingest_engine": {
+      "clone_url": "https://github.com/StegVerse-org/demo_ingest_engine.git",
+      "default_branch": "main",
+      "allowed_prefixes": [
+        "ingest/",
+        "configs/",
+        "incoming/",
+        "staging/",
+        "reports/",
+        "deprecated/",
+        "updated_targets/",
+        ".github/",
+        "README.md",
+        "requirements.txt",
+        "LICENSE",
+        "ARTIFACT_EVALUATION.md"
+      ]
+    }
+  },
+  "target_sets": {
+    "all": [
+      "stegverse-demo-suite",
+      "demo_suite_runner",
+      "demo_ingest_engine"
+    ],
+    "runtime_stack": [
+      "stegverse-demo-suite",
+      "demo_suite_runner"
+    ]
+  }
+}
