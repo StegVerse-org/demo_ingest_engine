@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+.env
+venv/
+env/
+.venv/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Runtime staging
+staging/*
+!staging/.gitkeep
+
+# Reports
+reports/*
+!reports/.gitkeep
+
+# Deprecated archives
+deprecated/*
+!deprecated/.gitkeep
+
+# Temporary bundles
+*.zip
+*.tar
+*.tar.gz
+
+# Logs
+*.log
