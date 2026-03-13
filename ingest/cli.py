@@ -22,6 +22,11 @@ from .recovery import apply_recovery, write_recovery_receipt
 from .wall_control import evaluate_interactions, write_interaction_reports
 from .event_bus import emit_interaction_events, write_event_bus_reports
 from .event_replay import replay_event_log, write_event_replay_reports
+from .event_ledger import append_event_ledger, verify_event_ledger, write_event_ledger_reports
+from .provenance_chain import append_provenance_step, verify_provenance_chain, write_provenance_reports
+from .guardian_runtime import load_guardian_policy, evaluate_guardian_boundary, write_guardian_reports
+from .experiment_runner import run_governance_experiment, write_experiment_reports
+from .shadow_policy import load_shadow_policy, evaluate_shadow_scenarios, write_shadow_reports
 
 ROOT = Path(".").resolve()
 
@@ -33,11 +38,15 @@ def parse_args():
     p.add_argument("source")
     p.add_argument("--entity", default=None)
     p.add_argument("--all-entities", action="store_true")
+    p.add_argument("--experiment", action="store_true")
+    p.add_argument("--trials", type=int, default=1)
 
     i = sub.add_parser("install")
     i.add_argument("source")
     i.add_argument("--entity", default=None)
     i.add_argument("--all-entities", action="store_true")
+    i.add_argument("--experiment", action="store_true")
+    i.add_argument("--trials", type=int, default=1)
 
     return parser.parse_args()
 
@@ -64,7 +73,28 @@ def run_for_entity(source: Path, mode: str, entity_name: str):
     admissibility_receipt["entity"] = entity_name
     write_admissibility_reports(reports_root, transition_receipt, admissibility_receipt)
 
-    allowed = governance_receipt["authorized"] and admissibility_receipt["admissible"]
+    guardian_policy = load_guardian_policy(ROOT / "configs" / "guardian_policy.json")
+    guardian_receipt = evaluate_guardian_boundary(source, mode, guardian_policy)
+    guardian_receipt["entity"] = entity_name
+    write_guardian_reports(reports_root, guardian_receipt)
+
+    shadow_policy = load_shadow_policy(ROOT / "configs" / "shadow_policy.json")
+    shadow_receipt = evaluate_shadow_scenarios(
+        mode,
+        mutation_receipt["mutation_type"],
+        governance_receipt,
+        admissibility_receipt,
+        guardian_receipt,
+        shadow_policy,
+    )
+    shadow_receipt["entity"] = entity_name
+    write_shadow_reports(reports_root, shadow_receipt)
+
+    allowed = (
+        governance_receipt["authorized"]
+        and admissibility_receipt["admissible"]
+        and guardian_receipt["verdict"] != "deny"
+    )
 
     report = {
         "entity": entity_name,
@@ -75,6 +105,8 @@ def run_for_entity(source: Path, mode: str, entity_name: str):
         "governance_receipt": governance_receipt,
         "transition_receipt": transition_receipt,
         "admissibility_receipt": admissibility_receipt,
+        "guardian_receipt": guardian_receipt,
+        "shadow_policy_receipt": shadow_receipt,
     }
 
     perturbation_receipt = apply_perturbation(entity_name, report, mutation_receipt, governance_receipt)
@@ -101,6 +133,8 @@ def run_for_entity(source: Path, mode: str, entity_name: str):
         "replay_status": replay_result["status"],
         "perturbed": perturbation_receipt.get("perturbation_enabled", False),
         "recovered": recovery_receipt.get("recovered", False),
+        "guardian_verdict": guardian_receipt["verdict"],
+        "shadow_scenarios": shadow_receipt.get("scenario_count", 0),
     }
 
 def main():
@@ -137,11 +171,28 @@ def main():
         write_event_replay_reports(ROOT / "reports", event_replay_result)
         print(f"Event replay {event_replay_result['status']}")
 
+        ledger_batch = append_event_ledger(ROOT, event_log)
+        ledger_verification = verify_event_ledger(ROOT)
+        write_event_ledger_reports(ROOT, ledger_batch, ledger_verification)
+        print(f"Event ledger {ledger_verification['status']} batch={ledger_batch['batch_id']}")
+
+        provenance_step = append_provenance_step(ROOT)
+        provenance_verification = verify_provenance_chain(ROOT)
+        write_provenance_reports(ROOT, provenance_step, provenance_verification)
+        print(f"Provenance chain {provenance_verification['status']} step={provenance_step['step_id']}")
+
+    if getattr(args, "experiment", False):
+        experiment = run_governance_experiment(ROOT, results, max(1, getattr(args, "trials", 1)))
+        write_experiment_reports(ROOT, experiment)
+        print(f"Experiment runner complete: trials={experiment['trial_count']} verification_rate={experiment['verification_rate']:.2f} replay_rate={experiment['replay_rate']:.2f}")
+
     for result in results:
         if result["allowed"]:
             print(f"Entity {result['entity']}: Ingestion complete")
         else:
             print(f"Entity {result['entity']}: Ingestion denied by governance or admissibility policy")
+        print(f"Entity {result['entity']}: Guardian verdict {result['guardian_verdict']}")
+        print(f"Entity {result['entity']}: Shadow scenarios evaluated {result['shadow_scenarios']}")
         print(f"Entity {result['entity']}: Independent verification {result['verification_status']}")
         print(f"Entity {result['entity']}: Deterministic replay {result['replay_status']}")
         if result["perturbed"]:
