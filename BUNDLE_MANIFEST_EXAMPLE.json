@@ -1,0 +1,9 @@
+{
+  "bundle_name": "runtime_stack_update",
+  "bundle_version": "v1.0.0",
+  "source_repo": "demo_ingest_engine",
+  "target_set": "runtime_stack",
+  "conflict_mode": "archive-and-replace",
+  "apply_mode": "artifact-only",
+  "notes": "Example manifest for automatic target resolution."
+}
