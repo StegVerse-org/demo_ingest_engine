@@ -14,6 +14,9 @@ from .admissibility_engine import (
     write_admissibility_reports,
 )
 from .entity_runtime import resolve_entities, reports_root_for_entity
+from .cross_entity_compare import compare_entities, write_comparison_reports
+from .replay import replay_reports, write_replay_reports
+from .convergence import analyze_convergence, write_convergence_reports
 
 ROOT = Path(".").resolve()
 
@@ -77,18 +80,35 @@ def run_for_entity(source: Path, mode: str, entity_name: str):
     verification_result = verify_reports(reports_root)
     write_verification_reports(reports_root, verification_result)
 
+    replay_result = replay_reports(reports_root)
+    write_replay_reports(reports_root, replay_result)
+
     return {
         "entity": entity_name,
         "allowed": allowed,
         "verification_status": verification_result["status"],
+        "replay_status": replay_result["status"],
     }
 
 def main():
     args = parse_args()
     source = Path(args.source).resolve()
 
-    entities = resolve_entities(ROOT, entity=getattr(args, "entity", None), all_entities=getattr(args, "all_entities", False))
+    entities = resolve_entities(
+        ROOT,
+        entity=getattr(args, "entity", None),
+        all_entities=getattr(args, "all_entities", False),
+    )
     results = [run_for_entity(source, args.cmd, entity_name) for entity_name in entities]
+
+    if len(entities) > 1:
+        divergence = compare_entities(ROOT, entities)
+        write_comparison_reports(ROOT, divergence)
+        print(f"Cross-entity divergence computed: state={divergence['state_hash_diverged']} mutation={divergence['mutation_type_diverged']} governance={divergence['governance_diverged']}")
+
+        convergence = analyze_convergence(ROOT, entities)
+        write_convergence_reports(ROOT, convergence)
+        print(f"Cross-entity convergence computed: replay={convergence['replay_converged']} state={convergence['state_hash_converged']} overall={convergence['overall_converged']}")
 
     for result in results:
         if result["allowed"]:
@@ -96,6 +116,7 @@ def main():
         else:
             print(f"Entity {result['entity']}: Ingestion denied by governance or admissibility policy")
         print(f"Entity {result['entity']}: Independent verification {result['verification_status']}")
+        print(f"Entity {result['entity']}: Deterministic replay {result['replay_status']}")
 
 if __name__ == "__main__":
     main()
