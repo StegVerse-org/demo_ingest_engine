@@ -4,6 +4,7 @@ from pathlib import Path
 from .receipt import write_receipts
 from .state_graph import append_state
 from .summary import write_summary
+from .state_graph_visualization import write_state_graph_mermaid
 
 ROOT = Path(".").resolve()
 
@@ -35,11 +36,13 @@ def main():
     receipt = write_receipts(reports_root, report, source)
     state_record = append_state(reports_root, receipt, report)
     write_summary(reports_root, receipt, state_record, report)
+    write_state_graph_mermaid(reports_root)
 
     print("Ingestion complete")
     print("Execution receipts generated")
     print("State graph updated")
     print("Summary report generated")
+    print("State graph visualization generated")
 
 if __name__ == "__main__":
     main()
