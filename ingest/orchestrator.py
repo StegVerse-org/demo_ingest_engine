@@ -5,18 +5,24 @@ from .git_ops import clone_repo
 from .planner import build_plan
 from .installer import install_files
 
+def _normalize_repo_key(name: str, cfg: dict) -> str:
+    aliases = cfg.get("repo_aliases", {})
+    return aliases.get(name, name)
+
 def resolve_targets(target_repo: str | None, target_set: str | None):
     cfg = load_repos_config()
     if target_set:
-        return cfg["target_sets"][target_set]
+        names = cfg["target_sets"][target_set]
+        return [_normalize_repo_key(name, cfg) for name in names]
     if target_repo:
-        return [target_repo]
+        return [_normalize_repo_key(target_repo, cfg)]
     raise ValueError("Either target_repo or target_set must be provided")
 
 def prepare_targets(target_names: list[str], work_root: Path):
     cfg = load_repos_config()
     prepared = {}
-    for name in target_names:
+    for raw_name in target_names:
+        name = _normalize_repo_key(raw_name, cfg)
         repo_cfg = cfg["repos"][name]
         repo_dir = work_root / name
         clone_repo(repo_cfg["clone_url"], repo_dir, branch=repo_cfg["default_branch"])
