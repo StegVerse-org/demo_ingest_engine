@@ -53,6 +53,30 @@
         "ARTIFACT_EVALUATION.md",
         "REPRODUCIBILITY.md"
       ]
+    },
+    "stegverse_gsl": {
+      "repo_slug": "stegverse-gsl",
+      "clone_url": "https://github.com/StegVerse-org/stegverse-gsl.git",
+      "default_branch": "main",
+      "allowed_prefixes": [
+        "sdk_assistant/",
+        "schemas/",
+        "engine/",
+        "buildout/",
+        "sandbox/",
+        "receipts/",
+        "tests/",
+        "config/",
+        "examples/",
+        "docs/",
+        ".github/",
+        "buildout.yaml",
+        "README.md",
+        "requirements.txt",
+        "LICENSE",
+        "ARTIFACT_EVALUATION.md",
+        "REPRODUCIBILITY.md"
+      ]
     }
   },
   "repo_aliases": {
@@ -61,17 +85,23 @@
     "demo_suite_runner": "demo_suite_runner",
     "demo-suite-runner": "demo_suite_runner",
     "stegverse_demo_suite": "stegverse_demo_suite",
-    "stegverse-demo-suite": "stegverse_demo_suite"
+    "stegverse-demo-suite": "stegverse_demo_suite",
+    "stegverse_gsl": "stegverse_gsl",
+    "stegverse-gsl": "stegverse_gsl"
   },
   "target_sets": {
     "all": [
       "demo_ingest_engine",
       "demo_suite_runner",
-      "stegverse_demo_suite"
+      "stegverse_demo_suite",
+      "stegverse_gsl"
     ],
     "runtime_stack": [
       "demo_suite_runner",
       "stegverse_demo_suite"
+    ],
+    "gsl_stack": [
+      "stegverse_gsl"
     ]
   }
 }
