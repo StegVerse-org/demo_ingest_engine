@@ -1,60 +1,94 @@
 {
   "repos": {
-    "demo_ingest_engine": {
-      "repo_slug": "demo_ingest_engine",
-      "clone_url": "https://github.com/StegVerse-org/demo_ingest_engine.git",
+    "stegcge": {
+      "org": "StegGhost",
+      "repo_slug": "StegCGE",
+      "clone_url": "https://github.com/StegGhost/StegCGE.git",
       "default_branch": "main",
       "allowed_prefixes": [
-        "ingest/",
-        "configs/",
-        "incoming/",
-        "staging/",
-        "reports/",
-        "deprecated/",
-        "updated_targets/",
+        "cge/",
+        "tests/",
+        "docs/",
+        "demo/",
         ".github/",
         "README.md",
         "requirements.txt",
-        "LICENSE",
-        "ARTIFACT_EVALUATION.md"
+        "run_demo.py",
+        "LICENSE"
       ]
     },
-    "demo_suite_runner": {
-      "repo_slug": "demo-suite-runner",
-      "clone_url": "https://github.com/StegVerse-org/demo-suite-runner.git",
+    "automated_buildout": {
+      "org": "StegGhost",
+      "repo_slug": "automated_buildout",
+      "clone_url": "https://github.com/StegGhost/automated_buildout.git",
+      "default_branch": "main",
+      "allowed_prefixes": [
+        "buildout/",
+        "engine/",
+        "bundles/",
+        "configs/",
+        "docs/",
+        "tests/",
+        ".github/",
+        "README.md",
+        "requirements.txt",
+        "LICENSE"
+      ]
+    },
+    "entity_sandbox_runner": {
+      "org": "StegGhost",
+      "repo_slug": "entity-sandbox-runner",
+      "clone_url": "https://github.com/StegGhost/entity-sandbox-runner.git",
       "default_branch": "main",
       "allowed_prefixes": [
         "runner/",
+        "sandbox/",
+        "experiments/",
         "configs/",
-        "scripts/",
         "reports/",
-        "runs/",
+        "docs/",
+        "tests/",
         ".github/",
         "README.md",
         "requirements.txt",
-        "LICENSE",
-        "ARTIFACT_EVALUATION.md"
+        "LICENSE"
       ]
     },
-    "stegverse_demo_suite": {
-      "repo_slug": "stegverse-demo-suite",
-      "clone_url": "https://github.com/StegVerse-org/stegverse-demo-suite.git",
+    "stegverse_sandbox": {
+      "org": "StegGhost",
+      "repo_slug": "stegverse-sandbox",
+      "clone_url": "https://github.com/StegGhost/stegverse-sandbox.git",
       "default_branch": "main",
       "allowed_prefixes": [
-        "docs/",
+        "sandbox/",
         "engine/",
-        "workflow/",
-        "theory/",
+        "configs/",
+        "docs/",
+        "tests/",
         ".github/",
         "README.md",
-        "stegverse",
-        "stegverse.cmd",
-        "LICENSE",
-        "ARTIFACT_EVALUATION.md",
-        "REPRODUCIBILITY.md"
+        "requirements.txt",
+        "LICENSE"
+      ]
+    },
+    "ghost_pat_lab": {
+      "org": "StegGhost",
+      "repo_slug": "ghost-pat-lab",
+      "clone_url": "https://github.com/StegGhost/ghost-pat-lab.git",
+      "default_branch": "main",
+      "allowed_prefixes": [
+        "lab/",
+        "experiments/",
+        "tests/",
+        "docs/",
+        ".github/",
+        "README.md",
+        "requirements.txt",
+        "LICENSE"
       ]
     },
     "stegverse_gsl": {
+      "org": "StegVerse-org",
       "repo_slug": "stegverse-gsl",
       "clone_url": "https://github.com/StegVerse-org/stegverse-gsl.git",
       "default_branch": "main",
@@ -79,6 +113,7 @@
       ]
     },
     "trust_kernel": {
+      "org": "StegVerse-org",
       "repo_slug": "trust-kernel",
       "clone_url": "https://github.com/StegVerse-org/trust-kernel.git",
       "default_branch": "main",
@@ -101,6 +136,7 @@
       ]
     },
     "stegverse_sdk": {
+      "org": "StegVerse-org",
       "repo_slug": "StegVerse-SDK",
       "clone_url": "https://github.com/StegVerse-org/StegVerse-SDK.git",
       "default_branch": "main",
@@ -122,12 +158,16 @@
     }
   },
   "repo_aliases": {
-    "demo_ingest_engine": "demo_ingest_engine",
-    "demo-ingest-engine": "demo_ingest_engine",
-    "demo_suite_runner": "demo_suite_runner",
-    "demo-suite-runner": "demo_suite_runner",
-    "stegverse_demo_suite": "stegverse_demo_suite",
-    "stegverse-demo-suite": "stegverse_demo_suite",
+    "stegcge": "stegcge",
+    "StegCGE": "stegcge",
+    "automated_buildout": "automated_buildout",
+    "automated-buildout": "automated_buildout",
+    "entity_sandbox_runner": "entity_sandbox_runner",
+    "entity-sandbox-runner": "entity_sandbox_runner",
+    "stegverse_sandbox": "stegverse_sandbox",
+    "stegverse-sandbox": "stegverse_sandbox",
+    "ghost_pat_lab": "ghost_pat_lab",
+    "ghost-pat-lab": "ghost_pat_lab",
     "stegverse_gsl": "stegverse_gsl",
     "stegverse-gsl": "stegverse_gsl",
     "trust_kernel": "trust_kernel",
@@ -138,16 +178,34 @@
   },
   "target_sets": {
     "all": [
-      "demo_ingest_engine",
-      "demo_suite_runner",
-      "stegverse_demo_suite",
+      "stegcge",
+      "automated_buildout",
+      "entity_sandbox_runner",
+      "stegverse_sandbox",
+      "ghost_pat_lab",
       "stegverse_gsl",
       "trust_kernel",
       "stegverse_sdk"
     ],
-    "runtime_stack": [
-      "demo_suite_runner",
-      "stegverse_demo_suite"
+    "stegghost_all": [
+      "stegcge",
+      "automated_buildout",
+      "entity_sandbox_runner",
+      "stegverse_sandbox",
+      "ghost_pat_lab"
+    ],
+    "stegverse_all": [
+      "stegverse_gsl",
+      "trust_kernel",
+      "stegverse_sdk"
+    ],
+    "core_build": [
+      "stegcge",
+      "automated_buildout"
+    ],
+    "sandbox_stack": [
+      "entity_sandbox_runner",
+      "stegverse_sandbox"
     ],
     "gsl_stack": [
       "stegverse_gsl"
@@ -156,8 +214,7 @@
       "trust_kernel",
       "stegverse_sdk"
     ],
-    "core_stack": [
-      "stegverse_gsl",
+    "production_surface": [
       "trust_kernel",
       "stegverse_sdk"
     ]
