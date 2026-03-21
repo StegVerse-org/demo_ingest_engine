@@ -19,4 +19,26 @@
     ".gitmodules",
     ".gitconfig"
   ]
+  {
+  "allowed_modes": ["plan", "install"],
+  "allowed_roots": [
+    "/home/runner/work/demo_ingest_engine/demo_ingest_engine/incoming",
+    "incoming",
+    "staging",
+    "reports"
+  ],
+  "allowed_transitions": {
+    "plan": [
+      "artifact_ingestion",
+      "configuration_change",
+      "documentation_change",
+      "policy_change",
+      "unknown_mutation"
+    ],
+    "install": [
+      "artifact_ingestion",
+      "configuration_change",
+      "documentation_change"
+    ]
+  }
 }
