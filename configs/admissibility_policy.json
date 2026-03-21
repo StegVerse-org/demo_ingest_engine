@@ -1,15 +1,14 @@
 {
   "policy_version": "1.1",
-  "allowed_modes": [
-    "plan",
-    "install"
-  ],
+
+  "allowed_modes": ["plan", "install"],
+
   "allowed_roots": [
-    "/home/runner/work/demo_ingest_engine/demo_ingest_engine/incoming",
     "incoming",
     "staging",
     "reports"
   ],
+
   "allowed_transitions": {
     "plan": [
       "artifact_ingestion",
@@ -24,9 +23,41 @@
       "documentation_change"
     ]
   },
+
   "blocked_sources_containing": [
     ".git/",
     ".gitmodules",
     ".gitconfig"
-  ]
+  ],
+
+  "entities": {
+    "default": {
+      "allowed_modes": ["plan", "install"],
+
+      "mode_rules": {
+        "plan": {
+          "allowed_mutations": [
+            "artifact_ingestion",
+            "configuration_change",
+            "documentation_change",
+            "policy_change",
+            "unknown_mutation"
+          ],
+          "enforcement": "observe_only"
+        },
+        "install": {
+          "allowed_mutations": [
+            "artifact_ingestion",
+            "configuration_change",
+            "documentation_change"
+          ],
+          "blocked_mutations": [
+            "unknown_mutation",
+            "policy_change"
+          ],
+          "enforcement": "strict"
+        }
+      }
+    }
+  }
 }
