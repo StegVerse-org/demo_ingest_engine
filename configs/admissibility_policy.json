@@ -1,5 +1,5 @@
 {
-  "policy_version": "1.0",
+  "policy_version": "1.1",
   "allowed_transitions": {
     "plan": [
       "artifact_ingestion",
