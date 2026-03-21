@@ -1,18 +1,59 @@
 {
-  "policy_version": "1.0",
-  "allowed_modes": [
-    "plan",
-    "install"
-  ],
-  "deny_missing_source": true,
-  "allowed_roots": [
-    "incoming",
-    "staging",
-    "reports"
-  ],
-  "blocked_suffixes": [
-    ".exe",
-    ".dll",
-    ".so"
-  ]
+  "policy_version": "1.1",
+  "entities": {
+    "default": {
+      "description": "Default ingestion entity with controlled artifact ingestion permissions",
+
+      "allowed_modes": [
+        "plan",
+        "install"
+      ],
+
+      "mode_rules": {
+        "plan": {
+          "allowed_mutations": [
+            "artifact_ingestion",
+            "configuration_change",
+            "documentation_change",
+            "policy_change",
+            "unknown_mutation"
+          ],
+          "enforcement": "observe_only"
+        },
+
+        "install": {
+          "allowed_mutations": [
+            "artifact_ingestion",
+            "configuration_change",
+            "documentation_change"
+          ],
+          "blocked_mutations": [
+            "unknown_mutation",
+            "policy_change"
+          ],
+          "enforcement": "strict"
+        }
+      },
+
+      "constraints": {
+        "require_manifest": true,
+        "require_known_mutation_type": true,
+        "enforce_allowed_prefixes": true,
+        "deny_if_policy_missing": true
+      },
+
+      "artifact_rules": {
+        "artifact_ingestion": {
+          "require_bundle_manifest": true,
+          "require_hash_verification": true,
+          "require_replay_validation": true,
+          "require_verification_pass": true,
+          "allowed_in_modes": [
+            "plan",
+            "install"
+          ]
+        }
+      }
+    }
+  }
 }
