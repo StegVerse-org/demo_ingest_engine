@@ -77,6 +77,48 @@
         "ARTIFACT_EVALUATION.md",
         "REPRODUCIBILITY.md"
       ]
+    },
+    "trust_kernel": {
+      "repo_slug": "trust-kernel",
+      "clone_url": "https://github.com/StegVerse-org/trust-kernel.git",
+      "default_branch": "main",
+      "allowed_prefixes": [
+        "trust_kernel/",
+        "api/",
+        "kernel/",
+        "receipts/",
+        "schemas/",
+        "tests/",
+        "examples/",
+        "docs/",
+        "config/",
+        ".github/",
+        "README.md",
+        "requirements.txt",
+        "LICENSE",
+        "ARTIFACT_EVALUATION.md",
+        "REPRODUCIBILITY.md"
+      ]
+    },
+    "stegverse_sdk": {
+      "repo_slug": "StegVerse-SDK",
+      "clone_url": "https://github.com/StegVerse-org/StegVerse-SDK.git",
+      "default_branch": "main",
+      "allowed_prefixes": [
+        "sdk/",
+        "stegverse_sdk/",
+        "client/",
+        "examples/",
+        "tests/",
+        "docs/",
+        "config/",
+        ".github/",
+        "README.md",
+        "requirements.txt",
+        "LICENSE",
+        "ARTIFACT_EVALUATION.md",
+        "REPRODUCIBILITY.md"
+      ]
     }
   },
   "repo_aliases": {
@@ -87,14 +129,21 @@
     "stegverse_demo_suite": "stegverse_demo_suite",
     "stegverse-demo-suite": "stegverse_demo_suite",
     "stegverse_gsl": "stegverse_gsl",
-    "stegverse-gsl": "stegverse_gsl"
+    "stegverse-gsl": "stegverse_gsl",
+    "trust_kernel": "trust_kernel",
+    "trust-kernel": "trust_kernel",
+    "stegverse_sdk": "stegverse_sdk",
+    "StegVerse-SDK": "stegverse_sdk",
+    "stegverse-sdk": "stegverse_sdk"
   },
   "target_sets": {
     "all": [
       "demo_ingest_engine",
       "demo_suite_runner",
       "stegverse_demo_suite",
-      "stegverse_gsl"
+      "stegverse_gsl",
+      "trust_kernel",
+      "stegverse_sdk"
     ],
     "runtime_stack": [
       "demo_suite_runner",
@@ -102,6 +151,15 @@
     ],
     "gsl_stack": [
       "stegverse_gsl"
+    ],
+    "trust_stack": [
+      "trust_kernel",
+      "stegverse_sdk"
+    ],
+    "core_stack": [
+      "stegverse_gsl",
+      "trust_kernel",
+      "stegverse_sdk"
     ]
   }
 }
