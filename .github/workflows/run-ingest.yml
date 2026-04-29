@@ -12,7 +12,7 @@ on:
           - install
           - orchestrate
       source_path:
-        description: path inside incoming/
+        description: path inside incoming/ or URL to artifact
         required: true
         default: incoming/bundle.zip
       conflict_mode:
@@ -39,25 +39,40 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Run ingestion
+      - name: Download source if URL provided
         run: |
-          if [ "${{ inputs.mode }}" = "plan" ]; then
-            python -m ingest.cli plan "${{ inputs.source_path }}"
+          SOURCE="${{ inputs.source_path }}"
+          if echo "$SOURCE" | grep -q "^https://"; then
+            echo "Downloading from URL: $SOURCE"
+            curl -L -o incoming/remote_bundle.zip "$SOURCE"
+            echo "REMOTE_SOURCE=incoming/remote_bundle.zip" >> $GITHUB_ENV
+          else
+            echo "Using local path: $SOURCE"
+            echo "REMOTE_SOURCE=$SOURCE" >> $GITHUB_ENV
           fi
 
-          if [ "${{ inputs.mode }}" = "install" ]; then
+      - name: Run ingestion
+        run: |
+          MODE="${{ inputs.mode }}"
+          SOURCE="${{ env.REMOTE_SOURCE }}"
+
+          if [ "$MODE" = "plan" ]; then
+            python -m ingest.cli plan "$SOURCE"
+          fi
+
+          if [ "$MODE" = "install" ]; then
             if [ "${{ inputs.conflict_mode }}" = "archive" ]; then
-              python -m ingest.cli install "${{ inputs.source_path }}" --archive
+              python -m ingest.cli install "$SOURCE" --archive
             else
-              python -m ingest.cli install "${{ inputs.source_path }}"
+              python -m ingest.cli install "$SOURCE"
             fi
           fi
 
-          if [ "${{ inputs.mode }}" = "orchestrate" ]; then
+          if [ "$MODE" = "orchestrate" ]; then
             if [ "${{ inputs.conflict_mode }}" = "archive" ]; then
-              python -m ingest.cli orchestrate "${{ inputs.source_path }}" --archive
+              python -m ingest.cli orchestrate "$SOURCE" --archive
             else
-              python -m ingest.cli orchestrate "${{ inputs.source_path }}"
+              python -m ingest.cli orchestrate "$SOURCE"
             fi
           fi
 
