@@ -207,7 +207,15 @@ def main():
             "install_results": [{"entity": r["entity"], "allowed": r["allowed"], "verification_status": r["verification_status"], "replay_status": r["replay_status"]} for r in install_results],
         }
         receipt = write_receipts(reports_root, orchestration_report, source)
-        write_summary(reports_root, receipt, None, orchestration_report)
+        # Create a minimal state record for write_summary compatibility
+        state_record = {
+            "state_id": receipt.get("receipt_id", "orch-001"),
+            "previous_state_id": None,
+            "entity": "orchestration",
+            "mode": "orchestrate",
+            "status": "complete",
+        }
+        write_summary(reports_root, receipt, state_record, orchestration_report)
 
         print(f"\n=== ORCHESTRATION COMPLETE ===")
         for r in install_results:
