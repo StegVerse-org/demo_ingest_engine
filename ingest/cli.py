@@ -53,25 +53,32 @@ ROOT = Path(".").resolve()
 def parse_args():
     parser = argparse.ArgumentParser(description="StegVerse ingestion engine")
     sub = parser.add_subparsers(dest="cmd", required=True)
-    for name in ["plan", "install"]:
+
+    shared_args = [
+        ("source", {"help": "source bundle path"}),
+        ("--entity", {"default": None, "help": "target entity name"}),
+        ("--all-entities", {"action": "store_true", "help": "run for all entities"}),
+        ("--experiment", {"action": "store_true", "help": "run governance experiments"}),
+        ("--trials", {"type": int, "default": 1, "help": "number of trials"}),
+        ("--stress-test", {"action": "store_true", "help": "run stress tests"}),
+        ("--policy-surface", {"action": "store_true", "help": "build policy surface"}),
+        ("--phase-diagram", {"action": "store_true", "help": "build phase diagram"}),
+        ("--adversarial", {"action": "store_true", "help": "run adversarial mutations"}),
+        ("--paper-reports", {"action": "store_true", "help": "generate paper-ready reports"}),
+        ("--coordinated-batch", {"action": "store_true", "help": "build coordinated experiment batch"}),
+        ("--unified-verify", {"action": "store_true", "help": "run unified provenance verification"}),
+        ("--actuation-plan", {"action": "store_true", "help": "build actuation plan"}),
+        ("--visuals", {"action": "store_true", "help": "generate governance visuals"}),
+        ("--full-verify", {"action": "store_true", "help": "run full system verification"}),
+        ("--profile", {"choices": ["demo", "research"], "default": None, "help": "run profile"}),
+        ("--publication-pack", {"action": "store_true", "help": "build publication pack"}),
+    ]
+
+    for name in ["plan", "install", "orchestrate"]:
         p = sub.add_parser(name)
-        p.add_argument("source")
-        p.add_argument("--entity", default=None)
-        p.add_argument("--all-entities", action="store_true")
-        p.add_argument("--experiment", action="store_true")
-        p.add_argument("--trials", type=int, default=1)
-        p.add_argument("--stress-test", action="store_true")
-        p.add_argument("--policy-surface", action="store_true")
-        p.add_argument("--phase-diagram", action="store_true")
-        p.add_argument("--adversarial", action="store_true")
-        p.add_argument("--paper-reports", action="store_true")
-        p.add_argument("--coordinated-batch", action="store_true")
-        p.add_argument("--unified-verify", action="store_true")
-        p.add_argument("--actuation-plan", action="store_true")
-        p.add_argument("--visuals", action="store_true")
-        p.add_argument("--full-verify", action="store_true")
-        p.add_argument("--profile", choices=["demo", "research"], default=None)
-        p.add_argument("--publication-pack", action="store_true")
+        for arg_name, arg_kwargs in shared_args:
+            p.add_argument(arg_name, **arg_kwargs)
+
     return parser.parse_args()
 
 def _run_optional_stage(reports_root: Path, stage_name: str, fn):
@@ -129,6 +136,89 @@ def main():
         write_run_profile_report(reports_root, args.profile, applied)
 
     entities = resolve_entities(ROOT, entity=getattr(args, "entity", None), all_entities=getattr(args, "all_entities", False))
+
+    # ORCHESTRATE mode: plan all, then install approved
+    if args.cmd == "orchestrate":
+        print(f"=== ORCHESTRATION MODE ===")
+        print(f"Entities: {entities}")
+        print(f"Source: {source}")
+
+        plan_results = []
+        for entity_name in entities:
+            print(f"\n[PLAN] Entity: {entity_name}")
+            result = run_for_entity(source, "plan", entity_name)
+            plan_results.append(result)
+            print(f"[PLAN] {entity_name}: allowed={result['allowed']} guardian={result['guardian_verdict']}")
+
+        install_results = []
+        for result in plan_results:
+            entity_name = result["entity"]
+            if result["allowed"]:
+                print(f"\n[INSTALL] Entity: {entity_name}")
+                install_result = run_for_entity(source, "install", entity_name)
+                install_results.append(install_result)
+                print(f"[INSTALL] {entity_name}: status=complete")
+            else:
+                print(f"\n[SKIP] Entity: {entity_name} — denied by governance/admissibility/guardian")
+                install_results.append(result)
+
+        if len(entities) > 1:
+            print(f"\n[COORDINATION] Cross-entity analysis")
+            divergence = compare_entities(ROOT, entities)
+            write_comparison_reports(ROOT, divergence)
+            print(f"[COORDINATION] Divergence: state={divergence['state_hash_diverged']} mutation={divergence['mutation_type_diverged']} governance={divergence['governance_diverged']}")
+
+            convergence = analyze_convergence(ROOT, entities)
+            write_convergence_reports(ROOT, convergence)
+            print(f"[COORDINATION] Convergence: replay={convergence['replay_converged']} state={convergence['state_hash_converged']} overall={convergence['overall_converged']}")
+
+            interaction_receipt = evaluate_interactions(ROOT, entities)
+            write_interaction_reports(ROOT, interaction_receipt)
+            allowed_edges = sum(1 for e in interaction_receipt["edges"] if e["permitted"])
+            blocked_edges = sum(1 for e in interaction_receipt["edges"] if not e["permitted"])
+            print(f"[COORDINATION] Interactions: allowed={allowed_edges} blocked={blocked_edges}")
+
+            event_log = emit_interaction_events(ROOT, entities, interaction_receipt)
+            write_event_bus_reports(ROOT, event_log)
+            print(f"[COORDINATION] Events: count={event_log['event_count']}")
+
+            ledger_batch = append_event_ledger(ROOT, event_log)
+            ledger_verification = verify_event_ledger(ROOT)
+            write_event_ledger_reports(ROOT, ledger_batch, ledger_verification)
+            print(f"[COORDINATION] Ledger: {ledger_verification['status']} batch={ledger_batch['batch_id']}")
+
+            provenance_step = append_provenance_step(ROOT)
+            provenance_verification = verify_provenance_chain(ROOT)
+            write_provenance_reports(ROOT, provenance_step, provenance_verification)
+            print(f"[COORDINATION] Provenance: {provenance_verification['status']} step={provenance_step['step_id']}")
+
+            conflicts = analyze_policy_conflicts(ROOT, entities)
+            write_policy_conflict_reports(reports_root, conflicts)
+            print(f"[COORDINATION] Policy conflicts: count={conflicts['conflict_count']}")
+
+            recovery = compute_recovery_metrics(ROOT, entities)
+            write_recovery_metrics_reports(reports_root, recovery)
+            print(f"[COORDINATION] Recovery metrics: rate={recovery['recovery_rate']:.2f}")
+
+        orchestration_report = {
+            "mode": "orchestrate",
+            "entities": entities,
+            "plan_results": [{"entity": r["entity"], "allowed": r["allowed"], "guardian_verdict": r["guardian_verdict"]} for r in plan_results],
+            "install_results": [{"entity": r["entity"], "allowed": r["allowed"], "verification_status": r["verification_status"], "replay_status": r["replay_status"]} for r in install_results],
+        }
+        receipt = write_receipts(reports_root, orchestration_report, source)
+        write_summary(reports_root, receipt, None, orchestration_report)
+
+        print(f"\n=== ORCHESTRATION COMPLETE ===")
+        for r in install_results:
+            status = "INSTALLED" if r["allowed"] else "DENIED"
+            print(f"  {r['entity']}: {status}")
+
+        index_data = build_report_index(reports_root)
+        write_report_index(reports_root, index_data)
+        return
+
+    # Standard plan/install mode
     results = [run_for_entity(source, args.cmd, entity_name) for entity_name in entities]
 
     flags = {
