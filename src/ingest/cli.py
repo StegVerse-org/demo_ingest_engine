@@ -54,7 +54,6 @@ def parse_args():
     parser = argparse.ArgumentParser(description="StegVerse ingestion engine")
     sub = parser.add_subparsers(dest="cmd", required=True)
 
-    # Shared arguments for all modes
     shared_args = [
         ("source", {"help": "source bundle path"}),
         ("--entity", {"default": None, "help": "target entity name"}),
@@ -75,7 +74,6 @@ def parse_args():
         ("--publication-pack", {"action": "store_true", "help": "build publication pack"}),
     ]
 
-    # Register plan, install, orchestrate
     for name in ["plan", "install", "orchestrate"]:
         p = sub.add_parser(name)
         for arg_name, arg_kwargs in shared_args:
@@ -145,7 +143,6 @@ def main():
         print(f"Entities: {entities}")
         print(f"Source: {source}")
 
-        # Phase 1: Plan for all entities
         plan_results = []
         for entity_name in entities:
             print(f"\n[PLAN] Entity: {entity_name}")
@@ -153,7 +150,6 @@ def main():
             plan_results.append(result)
             print(f"[PLAN] {entity_name}: allowed={result['allowed']} guardian={result['guardian_verdict']}")
 
-        # Phase 2: Install only approved entities
         install_results = []
         for result in plan_results:
             entity_name = result["entity"]
@@ -166,7 +162,6 @@ def main():
                 print(f"\n[SKIP] Entity: {entity_name} — denied by governance/admissibility/guardian")
                 install_results.append(result)
 
-        # Phase 3: Cross-entity coordination (only if multiple entities)
         if len(entities) > 1:
             print(f"\n[COORDINATION] Cross-entity analysis")
             divergence = compare_entities(ROOT, entities)
@@ -205,7 +200,6 @@ def main():
             write_recovery_metrics_reports(reports_root, recovery)
             print(f"[COORDINATION] Recovery metrics: rate={recovery['recovery_rate']:.2f}")
 
-        # Phase 4: Generate orchestration report
         orchestration_report = {
             "mode": "orchestrate",
             "entities": entities,
@@ -220,10 +214,8 @@ def main():
             status = "INSTALLED" if r["allowed"] else "DENIED"
             print(f"  {r['entity']}: {status}")
 
-        # Build report index
         index_data = build_report_index(reports_root)
         write_report_index(reports_root, index_data)
-
         return
 
     # Standard plan/install mode
