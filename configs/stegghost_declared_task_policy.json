@@ -1,0 +1,52 @@
+{
+  "policy_version": "1.0",
+  "policy_name": "stegghost_declared_task_manifest_policy",
+  "active_path": "stegverse_org_to_stegghost_sandbox_testing",
+  "submission_interfaces": [
+    "StegVerse-org SDK",
+    "StegVerse-org LLM adapter"
+  ],
+  "recipient": "StegGhost ingestion",
+  "allowed_schema": "stegverse.declared_sandbox_test_task.v1",
+  "allowed_task_type": "sandbox_test",
+  "allowed_requested_modes": [
+    "test"
+  ],
+  "blocked_requested_modes": [
+    "install",
+    "execute",
+    "plan",
+    "review",
+    "governance_review",
+    "mutate_receiver",
+    "dispatch_downstream_execution"
+  ],
+  "required_manifest_fields": [
+    "schema",
+    "task_type",
+    "requested_mode",
+    "submitter",
+    "target",
+    "test",
+    "boundary"
+  ],
+  "target_constraints": {
+    "recipient": "StegGhost ingestion",
+    "sandbox_only": true
+  },
+  "boundary_constraints": {
+    "sandbox_only": true,
+    "return_result_only": true,
+    "conversation_loop_allowed": false,
+    "human_review_required": false,
+    "install_authority": false,
+    "execution_authority_outside_sandbox": false,
+    "repository_mutation_allowed": false
+  },
+  "result_constraints": {
+    "emit_result_receipt": true,
+    "return_to_submitter": true,
+    "no_planning_authority": true
+  },
+  "fail_closed_on_any_other_manifest": true
+}
