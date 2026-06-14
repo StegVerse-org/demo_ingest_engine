@@ -1,7 +1,7 @@
 {
   "admitted_count": 1,
   "fail_closed_count": 0,
-  "generated_at_utc": "2026-06-14T21:17:17.459304Z",
+  "generated_at_utc": "2026-06-14T21:19:39.918983Z",
   "latest_receipt": {
     "admitted": true,
     "credential_provider": "TV/TVC",

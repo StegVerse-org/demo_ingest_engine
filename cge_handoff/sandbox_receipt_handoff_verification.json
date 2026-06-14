@@ -17,7 +17,7 @@
     "handoff_latest_batch_hash_matches"
   ],
   "execution_authority": false,
-  "generated_at_utc": "2026-06-14T21:17:17.619366Z",
+  "generated_at_utc": "2026-06-14T21:19:40.081532Z",
   "handoff_dir": "cge_handoff",
   "handoff_scope": "classification_only",
   "install_authority": false,

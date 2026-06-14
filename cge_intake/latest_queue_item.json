@@ -18,14 +18,14 @@
     "observe_only_handoff",
     "review_before_action"
   ],
-  "created_at_utc": "2026-06-14T21:17:17.658647Z",
+  "created_at_utc": "2026-06-14T21:19:40.122407Z",
   "execution_authority": false,
   "handoff_verdict": "READY_FOR_REVIEW",
   "install_authority": false,
   "latest_batch": {
     "admitted_count": 1,
-    "batch_number": 2,
-    "batch_sha256": "d4678ecd817b17a6dfec5e263cc4398e70bf2383ff1b177c689f12aef5e9e996",
+    "batch_number": 3,
+    "batch_sha256": "59aa3466364726cd515444bb75110ac2bb49c0ad7cf1a77969c53faab4ce0128",
     "fail_closed_count": 0,
     "receipt_count": 1,
     "verification_status": "PASS"
@@ -34,9 +34,9 @@
   "queue_status": "QUEUED_FOR_REVIEW",
   "review_required": true,
   "source_path": "cge_handoff/sandbox_receipt_handoff.json",
-  "source_sha256": "b19ecd7af0df6343d1e428ee3fbd834a4c30cba8e0ae48e2482bee028326dc72",
+  "source_sha256": "1a50a7a8d83d18e9a3548504ae19c6d905a102fe81658fe74d1b5c9f271d0783",
   "source_type": "sandbox_receipt_handoff",
   "verification_path": "cge_handoff/sandbox_receipt_handoff_verification.json",
-  "verification_sha256": "6f9516dbc98cee45a35e3d08ed02d075e7b57832b311694ca3c9a7bdfc258d5f",
+  "verification_sha256": "f98ca45e207a9319d6cde3d61a84df39bd4f36ec2584d23c2188aa9a9b5d49cc",
   "verification_status": "PASS"
 }

@@ -1,14 +1,14 @@
 # Sandbox Receipt CGE Handoff
 
 - Version: `1.0`
-- Created: `2026-06-14T21:17:17.579568Z`
+- Created: `2026-06-14T21:19:40.040842Z`
 - Target: `CGE`
 - Scope: `classification_only`
 - Verdict: **READY_FOR_REVIEW**
 - Execution authority: `False`
 - Install authority: `False`
-- Source SHA-256: `d7455a2a8b635a4c75f11d4b2e16828628ade0605f31add05ad1219c6df04f39`
-- Ledger verification SHA-256: `d4d26dcfe92f3e152dd765af2f321ac8611bdec36955a8238d7c0b6c1cbd2842`
+- Source SHA-256: `5b58ac779c8e6b831866b7f144e22e1eb71c13cc471c455405910b5adc80f8de`
+- Ledger verification SHA-256: `6c1f3cc13673b5fe80ac900c1ddb844ce4861cf4a8493ddc0bc30b3eff42e020`
 
 ## Reasons
 
@@ -23,9 +23,9 @@
 
 ## Latest Ledger Batch
 
-- Batch number: `2`
-- Batch SHA-256: `d4678ecd817b17a6dfec5e263cc4398e70bf2383ff1b177c689f12aef5e9e996`
-- Previous batch SHA-256: `44fe67e81ec5fb8efdbdd7defd76af0708fb5a0d5f470d8a021fe10d9994a3c7`
+- Batch number: `3`
+- Batch SHA-256: `59aa3466364726cd515444bb75110ac2bb49c0ad7cf1a77969c53faab4ce0128`
+- Previous batch SHA-256: `d4678ecd817b17a6dfec5e263cc4398e70bf2383ff1b177c689f12aef5e9e996`
 - Receipt count: `1`
 - Admitted count: `1`
 - Fail-closed count: `0`

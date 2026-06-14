@@ -1,16 +1,16 @@
 {
-  "generated_at_utc": "2026-06-14T21:17:17.757862Z",
+  "generated_at_utc": "2026-06-14T21:19:40.219706Z",
   "latest_review": {
-    "created_at_utc": "2026-06-14T21:17:17.757351Z",
+    "created_at_utc": "2026-06-14T21:19:40.219103Z",
     "execution_authority": false,
     "install_authority": false,
-    "path": "review_receipts/sandbox_receipt_review_20260614T211717Z.json",
+    "path": "review_receipts/sandbox_receipt_review_20260614T211940Z.json",
     "planning_authority": false,
     "reviewer": "Rigel Randolph",
-    "sha256": "33fe2d6d898762f1e0ee0f709985015a14d018d5d9ae6df78d76cd25065504ba",
+    "sha256": "175fa8ab9cf280d7106f44c54956bfc94fe7e1e99f82479cd37b1e9e2d804140",
     "verdict": "HOLD_FOR_MORE_EVIDENCE"
   },
-  "review_count": 1,
+  "review_count": 2,
   "reviews": [
     {
       "created_at_utc": "2026-06-14T21:17:17.757351Z",
@@ -20,6 +20,16 @@
       "planning_authority": false,
       "reviewer": "Rigel Randolph",
       "sha256": "33fe2d6d898762f1e0ee0f709985015a14d018d5d9ae6df78d76cd25065504ba",
+      "verdict": "HOLD_FOR_MORE_EVIDENCE"
+    },
+    {
+      "created_at_utc": "2026-06-14T21:19:40.219103Z",
+      "execution_authority": false,
+      "install_authority": false,
+      "path": "review_receipts/sandbox_receipt_review_20260614T211940Z.json",
+      "planning_authority": false,
+      "reviewer": "Rigel Randolph",
+      "sha256": "175fa8ab9cf280d7106f44c54956bfc94fe7e1e99f82479cd37b1e9e2d804140",
       "verdict": "HOLD_FOR_MORE_EVIDENCE"
     }
   ],

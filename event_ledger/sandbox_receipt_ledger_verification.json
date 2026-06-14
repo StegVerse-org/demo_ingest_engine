@@ -1,5 +1,5 @@
 {
-  "batch_count": 2,
+  "batch_count": 3,
   "batches": [
     {
       "admitted_count": 1,
@@ -20,6 +20,16 @@
       "previous_batch_sha256": "44fe67e81ec5fb8efdbdd7defd76af0708fb5a0d5f470d8a021fe10d9994a3c7",
       "receipt_count": 1,
       "verification_status": "PASS"
+    },
+    {
+      "admitted_count": 1,
+      "batch_number": 3,
+      "batch_sha256": "59aa3466364726cd515444bb75110ac2bb49c0ad7cf1a77969c53faab4ce0128",
+      "fail_closed_count": 0,
+      "path": "event_ledger/sandbox_receipt_batch_000003.json",
+      "previous_batch_sha256": "d4678ecd817b17a6dfec5e263cc4398e70bf2383ff1b177c689f12aef5e9e996",
+      "receipt_count": 1,
+      "verification_status": "PASS"
     }
   ],
   "checks_failed": [],
@@ -32,16 +42,20 @@
     "batch_number_matches:sandbox_receipt_batch_000002.json",
     "previous_hash_matches:sandbox_receipt_batch_000002.json",
     "verification_status_pass:sandbox_receipt_batch_000002.json",
+    "batch_hash_matches:sandbox_receipt_batch_000003.json",
+    "batch_number_matches:sandbox_receipt_batch_000003.json",
+    "previous_hash_matches:sandbox_receipt_batch_000003.json",
+    "verification_status_pass:sandbox_receipt_batch_000003.json",
     "latest_pointer_matches_last_batch"
   ],
-  "generated_at_utc": "2026-06-14T21:17:17.540055Z",
+  "generated_at_utc": "2026-06-14T21:19:40.000852Z",
   "latest_batch": {
     "admitted_count": 1,
-    "batch_number": 2,
-    "batch_sha256": "d4678ecd817b17a6dfec5e263cc4398e70bf2383ff1b177c689f12aef5e9e996",
+    "batch_number": 3,
+    "batch_sha256": "59aa3466364726cd515444bb75110ac2bb49c0ad7cf1a77969c53faab4ce0128",
     "fail_closed_count": 0,
-    "path": "event_ledger/sandbox_receipt_batch_000002.json",
-    "previous_batch_sha256": "44fe67e81ec5fb8efdbdd7defd76af0708fb5a0d5f470d8a021fe10d9994a3c7",
+    "path": "event_ledger/sandbox_receipt_batch_000003.json",
+    "previous_batch_sha256": "d4678ecd817b17a6dfec5e263cc4398e70bf2383ff1b177c689f12aef5e9e996",
     "receipt_count": 1,
     "verification_status": "PASS"
   },
