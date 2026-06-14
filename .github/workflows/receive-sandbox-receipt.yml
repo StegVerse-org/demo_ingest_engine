@@ -65,16 +65,22 @@ jobs:
           python tools/verify_sandbox_receipt_index.py \
             --receipts-dir reports/sandbox_receipts
 
-      - name: Commit admitted receipt record, index, and verification
+      - name: Bind sandbox receipts to event ledger
+        run: |
+          python tools/bind_sandbox_receipts_ledger.py \
+            --receipts-dir reports/sandbox_receipts \
+            --ledger-dir event_ledger
+
+      - name: Commit admitted receipt record, index, verification, and ledger
         if: success()
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "actions@github.com"
-          git add reports/sandbox_receipts
+          git add reports/sandbox_receipts event_ledger
           git diff --cached --quiet || git commit -m "receipts: record StegGhost sandbox packet"
           git push
 
-      - name: Upload received packet, receipt, index, and verification
+      - name: Upload received packet, receipt, index, verification, and ledger
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -82,4 +88,5 @@ jobs:
           path: |
             received_sandbox_packet.json
             reports/sandbox_receipts/
+            event_ledger/
             receipt_path.txt
