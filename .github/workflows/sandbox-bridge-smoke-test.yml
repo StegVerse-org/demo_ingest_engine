@@ -1,0 +1,96 @@
+name: Sandbox Bridge Smoke Test
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "tools/validate_sandbox_packet.py"
+      - ".github/workflows/sandbox-bridge-smoke-test.yml"
+      - ".github/workflows/receive-sandbox-receipt.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  smoke-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Org ingestion engine
+        uses: actions/checkout@v4
+
+      - name: Build accepted review packet
+        run: |
+          cat > accepted_review_packet.json <<'JSON'
+          {
+            "schema": "stegverse.entity_sandbox_bridge.v1",
+            "sender_repository": "StegGhost/entity-sandbox-runner",
+            "receiver_repository": "StegVerse-org/demo_ingest_engine",
+            "requested_mode": "review",
+            "boundary": {
+              "sender_role": "sandbox_actor",
+              "receiver_role": "org_ingestion_authority",
+              "sender_may_install_into_receiver": false,
+              "receiver_must_fail_closed_on_install_request": true
+            },
+            "receipt": {
+              "missing": true,
+              "path": "manual-smoke-test",
+              "reason": "smoke_test_packet"
+            }
+          }
+          JSON
+
+      - name: Accepted review packet must pass
+        run: |
+          python tools/validate_sandbox_packet.py \
+            --packet accepted_review_packet.json \
+            --out-dir smoke_reports/accepted \
+            --receipt-path-file accepted_receipt_path.txt
+
+      - name: Build refused install packet
+        run: |
+          cat > refused_install_packet.json <<'JSON'
+          {
+            "schema": "stegverse.entity_sandbox_bridge.v1",
+            "sender_repository": "StegGhost/entity-sandbox-runner",
+            "receiver_repository": "StegVerse-org/demo_ingest_engine",
+            "requested_mode": "install",
+            "boundary": {
+              "sender_role": "sandbox_actor",
+              "receiver_role": "org_ingestion_authority",
+              "sender_may_install_into_receiver": false,
+              "receiver_must_fail_closed_on_install_request": true
+            },
+            "receipt": {
+              "missing": true,
+              "path": "manual-smoke-test",
+              "reason": "smoke_test_packet"
+            }
+          }
+          JSON
+
+      - name: Install packet must fail closed
+        run: |
+          if python tools/validate_sandbox_packet.py \
+            --packet refused_install_packet.json \
+            --out-dir smoke_reports/refused \
+            --receipt-path-file refused_receipt_path.txt
+          then
+            echo "Install packet was admitted unexpectedly."
+            exit 1
+          fi
+
+          echo "Install packet failed closed as expected."
+
+      - name: Upload smoke-test receipts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sandbox-bridge-smoke-test-receipts
+          path: |
+            accepted_review_packet.json
+            refused_install_packet.json
+            smoke_reports/
+            accepted_receipt_path.txt
+            refused_receipt_path.txt
