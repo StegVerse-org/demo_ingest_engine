@@ -77,6 +77,12 @@ jobs:
             --ledger-dir event_ledger \
             --handoff-dir cge_handoff
 
+      - name: Verify CGE handoff
+        run: |
+          python tools/verify_sandbox_receipt_handoff.py \
+            --ledger-dir event_ledger \
+            --handoff-dir cge_handoff
+
       - name: Commit admitted receipt record, index, verification, ledger, and handoff
         if: success()
         run: |
