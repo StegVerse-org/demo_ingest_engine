@@ -9,6 +9,7 @@ on:
       - "tools/index_sandbox_receipts.py"
       - "tools/verify_sandbox_receipt_index.py"
       - "tools/bind_sandbox_receipts_ledger.py"
+      - "tools/classify_sandbox_receipt_handoff.py"
       - ".github/workflows/sandbox-bridge-smoke-test.yml"
       - ".github/workflows/receive-sandbox-receipt.yml"
 
@@ -107,7 +108,13 @@ jobs:
             --receipts-dir smoke_reports/receipts \
             --ledger-dir smoke_reports/event_ledger
 
-      - name: Assert smoke-test counts, replay status, and ledger binding
+      - name: Classify CGE handoff
+        run: |
+          python tools/classify_sandbox_receipt_handoff.py \
+            --ledger-dir smoke_reports/event_ledger \
+            --handoff-dir smoke_reports/cge_handoff
+
+      - name: Assert smoke-test counts, replay status, ledger binding, and CGE handoff
         run: |
           python - <<'PY'
           import json
@@ -122,6 +129,8 @@ jobs:
           ledger_latest_path = Path("smoke_reports/event_ledger/latest_sandbox_receipt_batch.json")
           ledger_verification_path = Path("smoke_reports/event_ledger/sandbox_receipt_ledger_verification.json")
           ledger_summary_path = Path("smoke_reports/event_ledger/sandbox_receipt_ledger_verification.md")
+          handoff_path = Path("smoke_reports/cge_handoff/sandbox_receipt_handoff.json")
+          handoff_summary_path = Path("smoke_reports/cge_handoff/sandbox_receipt_handoff.md")
 
           for path in [
               index_path,
@@ -133,6 +142,8 @@ jobs:
               ledger_latest_path,
               ledger_verification_path,
               ledger_summary_path,
+              handoff_path,
+              handoff_summary_path,
           ]:
               assert path.exists(), f"{path} missing"
 
@@ -141,6 +152,7 @@ jobs:
           ledger_batch = json.loads(ledger_batch_path.read_text(encoding="utf-8"))
           ledger_latest = json.loads(ledger_latest_path.read_text(encoding="utf-8"))
           ledger_verification = json.loads(ledger_verification_path.read_text(encoding="utf-8"))
+          handoff = json.loads(handoff_path.read_text(encoding="utf-8"))
 
           assert index["receipt_count"] == 2, index
           assert index["parseable_count"] == 2, index
@@ -159,11 +171,15 @@ jobs:
           assert ledger_latest["batch_sha256"] == ledger_batch["batch_sha256"], ledger_latest
           assert ledger_verification["status"] == "PASS", ledger_verification
           assert ledger_verification["batch_count"] == 1, ledger_verification
+          assert handoff["verdict"] == "READY_FOR_REVIEW", handoff
+          assert handoff["execution_authority"] is False, handoff
+          assert handoff["install_authority"] is False, handoff
+          assert handoff["handoff_scope"] == "classification_only", handoff
 
-          print(json.dumps({"index": index, "verification": verification, "ledger": ledger_verification}, indent=2, sort_keys=True))
+          print(json.dumps({"index": index, "verification": verification, "ledger": ledger_verification, "handoff": handoff}, indent=2, sort_keys=True))
           PY
 
-      - name: Upload smoke-test receipts, index, verification, and ledger
+      - name: Upload smoke-test receipts, index, verification, ledger, and handoff
         if: always()
         uses: actions/upload-artifact@v4
         with:
