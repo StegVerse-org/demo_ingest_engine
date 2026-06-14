@@ -60,7 +60,12 @@ jobs:
           python tools/index_sandbox_receipts.py \
             --receipts-dir reports/sandbox_receipts
 
-      - name: Commit admitted receipt record and index
+      - name: Verify sandbox receipt index
+        run: |
+          python tools/verify_sandbox_receipt_index.py \
+            --receipts-dir reports/sandbox_receipts
+
+      - name: Commit admitted receipt record, index, and verification
         if: success()
         run: |
           git config user.name "github-actions[bot]"
@@ -69,7 +74,7 @@ jobs:
           git diff --cached --quiet || git commit -m "receipts: record StegGhost sandbox packet"
           git push
 
-      - name: Upload received packet, receipt, and index
+      - name: Upload received packet, receipt, index, and verification
         if: always()
         uses: actions/upload-artifact@v4
         with:
