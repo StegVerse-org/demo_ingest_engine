@@ -1,0 +1,34 @@
+{
+  "policy_version": "1.0",
+  "bridge": "stegghost_to_stegverse_org",
+  "credential_provider": "TV/TVC",
+  "sender_repository": "StegGhost/entity-sandbox-runner",
+  "receiver_repository": "StegVerse-org/demo_ingest_engine",
+  "allowed_event_types": [
+    "entity_sandbox_receipt"
+  ],
+  "allowed_requested_modes": [
+    "plan",
+    "review"
+  ],
+  "blocked_requested_modes": [
+    "install"
+  ],
+  "allowed_transport_actions": [
+    "repository_dispatch"
+  ],
+  "credential_constraints": {
+    "long_lived_repo_secret_allowed": false,
+    "ephemeral_token_required": true,
+    "token_scope_must_be_receiver_only": true,
+    "token_must_not_grant_contents_write_to_sender": true,
+    "token_must_not_grant_org_admin": true
+  },
+  "receiver_enforcement": {
+    "validate_packet_schema": true,
+    "validate_sender_repository": true,
+    "validate_receiver_repository": true,
+    "fail_closed_on_install_request": true,
+    "record_admission_receipt": true
+  }
+}
