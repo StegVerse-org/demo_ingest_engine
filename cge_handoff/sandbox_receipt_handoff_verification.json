@@ -1,0 +1,28 @@
+{
+  "checks_failed": [],
+  "checks_passed": [
+    "handoff_json_exists",
+    "handoff_markdown_exists",
+    "latest_batch_exists",
+    "ledger_verification_exists",
+    "source_hash_matches_latest_batch",
+    "ledger_verification_hash_matches",
+    "ledger_verification_status_pass",
+    "handoff_embedded_ledger_status_pass",
+    "verdict_is_known_classification",
+    "execution_authority_false",
+    "install_authority_false",
+    "handoff_scope_classification_only",
+    "required_constraints_present",
+    "handoff_latest_batch_hash_matches"
+  ],
+  "execution_authority": false,
+  "generated_at_utc": "2026-06-14T21:10:59.716480Z",
+  "handoff_dir": "cge_handoff",
+  "handoff_scope": "classification_only",
+  "install_authority": false,
+  "ledger_dir": "event_ledger",
+  "sandbox_receipt_cge_handoff_verification_version": "1.0",
+  "status": "PASS",
+  "verdict": "READY_FOR_REVIEW"
+}

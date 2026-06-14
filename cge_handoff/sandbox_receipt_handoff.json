@@ -1,0 +1,45 @@
+{
+  "constraints": [
+    "observe_only_handoff",
+    "no_execution_authority",
+    "no_install_authority",
+    "cge_must_revalidate_before_action"
+  ],
+  "created_at_utc": "2026-06-14T21:10:59.657310Z",
+  "execution_authority": false,
+  "handoff_scope": "classification_only",
+  "handoff_target": "CGE",
+  "install_authority": false,
+  "latest_batch": {
+    "admitted_count": 1,
+    "batch_number": 1,
+    "batch_sha256": "44fe67e81ec5fb8efdbdd7defd76af0708fb5a0d5f470d8a021fe10d9994a3c7",
+    "fail_closed_count": 0,
+    "previous_batch_sha256": null,
+    "receipt_count": 1,
+    "verification_status": "PASS"
+  },
+  "ledger_verification": {
+    "batch_count": 1,
+    "latest_batch": {
+      "admitted_count": 1,
+      "batch_number": 1,
+      "batch_sha256": "44fe67e81ec5fb8efdbdd7defd76af0708fb5a0d5f470d8a021fe10d9994a3c7",
+      "fail_closed_count": 0,
+      "path": "event_ledger/sandbox_receipt_batch_000001.json",
+      "previous_batch_sha256": null,
+      "receipt_count": 1,
+      "verification_status": "PASS"
+    },
+    "status": "PASS"
+  },
+  "ledger_verification_sha256": "7631589e70baed8a27299c68e41be46b2efb0be030b11b673c6045aa5db12db1",
+  "ledger_verification_source": "event_ledger/sandbox_receipt_ledger_verification.json",
+  "reasons": [
+    "one_or_more_packets_admitted_for_review"
+  ],
+  "sandbox_receipt_cge_handoff_version": "1.0",
+  "source": "event_ledger/latest_sandbox_receipt_batch.json",
+  "source_sha256": "202ffe857768925d4649a8f94830db6136788312d941b5c9260a01abd4ee7955",
+  "verdict": "READY_FOR_REVIEW"
+}

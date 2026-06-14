@@ -1,0 +1,25 @@
+{
+  "checks_failed": [],
+  "checks_passed": [
+    "index_json_exists",
+    "latest_json_exists",
+    "index_markdown_exists",
+    "receipt_count_matches_files",
+    "all_receipt_files_indexed",
+    "receipt_hashes_match",
+    "parseable_count_matches",
+    "admitted_count_matches",
+    "fail_closed_count_matches",
+    "latest_json_matches_index",
+    "latest_receipt_file_exists"
+  ],
+  "generated_at_utc": "2026-06-14T21:10:59.536278Z",
+  "indexed_receipt_count": 1,
+  "receipt_file_count": 1,
+  "receipts_dir": "reports/sandbox_receipts",
+  "recomputed_admitted_count": 1,
+  "recomputed_fail_closed_count": 0,
+  "recomputed_parseable_count": 1,
+  "sandbox_receipt_index_verification_version": "1.0",
+  "status": "PASS"
+}

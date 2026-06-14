@@ -1,0 +1,20 @@
+{
+  "admitted": true,
+  "credential_provider": "TV/TVC",
+  "error_count": 0,
+  "filename": "stegghost_1781471459418.receipt.json",
+  "packet_sha256": "3a5811f7401e3fe4c043bb35fd214fae1b39551f6d67f7ee6ad1e4f5a5967046",
+  "parseable": true,
+  "path": "sandbox_receipts/stegghost_1781471459418.receipt.json",
+  "policy_sha256": "5b211da9e81db5483a0a28b1419dff0da3ce5926d6d017871246276e5af9ad59",
+  "policy_version": "1.0",
+  "received_at_unix": 1781471459.4187167,
+  "received_at_utc": "2026-06-14T21:10:59.418717Z",
+  "receiver_repository": "StegVerse-org/demo_ingest_engine",
+  "requested_mode": "review",
+  "schema": "stegverse.org_sandbox_receipt_admission.v1",
+  "sender_repository": "StegGhost/entity-sandbox-runner",
+  "sha256": "64af04d4e062a8e0583421a92496eebdc8eda27669a804243acfabf2cc425213",
+  "size_bytes": 1031,
+  "verdict": "RECEIVED_FOR_REVIEW"
+}

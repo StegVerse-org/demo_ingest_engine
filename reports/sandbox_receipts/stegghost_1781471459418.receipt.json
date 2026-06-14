@@ -1,0 +1,29 @@
+{
+  "admitted": true,
+  "credential_provider": "TV/TVC",
+  "errors": [],
+  "packet": {
+    "boundary": {
+      "receiver_must_fail_closed_on_install_request": true,
+      "sender_may_install_into_receiver": false
+    },
+    "event_type": "entity_sandbox_receipt",
+    "receipt": {
+      "missing": true,
+      "path": "manual"
+    },
+    "receiver_repository": "StegVerse-org/demo_ingest_engine",
+    "requested_mode": "review",
+    "schema": "stegverse.entity_sandbox_bridge.v1",
+    "sender_repository": "StegGhost/entity-sandbox-runner"
+  },
+  "packet_sha256": "3a5811f7401e3fe4c043bb35fd214fae1b39551f6d67f7ee6ad1e4f5a5967046",
+  "policy_sha256": "5b211da9e81db5483a0a28b1419dff0da3ce5926d6d017871246276e5af9ad59",
+  "policy_version": "1.0",
+  "received_at_unix": 1781471459.4187167,
+  "receiver_repository": "StegVerse-org/demo_ingest_engine",
+  "requested_mode": "review",
+  "schema": "stegverse.org_sandbox_receipt_admission.v1",
+  "sender_repository": "StegGhost/entity-sandbox-runner",
+  "verdict": "RECEIVED_FOR_REVIEW"
+}

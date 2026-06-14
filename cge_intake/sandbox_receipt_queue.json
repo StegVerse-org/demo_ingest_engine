@@ -1,0 +1,97 @@
+{
+  "blocked_count": 0,
+  "execution_authority": false,
+  "generated_at_utc": "2026-06-14T21:10:59.780568Z",
+  "install_authority": false,
+  "item_count": 1,
+  "items": [
+    {
+      "allowed_actions": [
+        "observe",
+        "review",
+        "classify"
+      ],
+      "blocked_actions": [
+        "install",
+        "execute",
+        "mutate_receiver",
+        "dispatch_downstream_execution"
+      ],
+      "constraints": [
+        "cge_must_revalidate_before_action",
+        "cge_queue_is_non_executing",
+        "no_execution_authority",
+        "no_install_authority",
+        "observe_only_handoff",
+        "review_before_action"
+      ],
+      "created_at_utc": "2026-06-14T21:10:59.780448Z",
+      "execution_authority": false,
+      "handoff_verdict": "READY_FOR_REVIEW",
+      "install_authority": false,
+      "latest_batch": {
+        "admitted_count": 1,
+        "batch_number": 1,
+        "batch_sha256": "44fe67e81ec5fb8efdbdd7defd76af0708fb5a0d5f470d8a021fe10d9994a3c7",
+        "fail_closed_count": 0,
+        "receipt_count": 1,
+        "verification_status": "PASS"
+      },
+      "queue_item_version": "1.0",
+      "queue_status": "QUEUED_FOR_REVIEW",
+      "review_required": true,
+      "source_path": "cge_handoff/sandbox_receipt_handoff.json",
+      "source_sha256": "04ce09adb4436de9e66a225f2496c939b265b534605846f1f1c3d7f22b920e50",
+      "source_type": "sandbox_receipt_handoff",
+      "verification_path": "cge_handoff/sandbox_receipt_handoff_verification.json",
+      "verification_sha256": "721033dc1dea1999b0191d298c11b70e01d1518ffd3db8b9f0e067af94ac8a7f",
+      "verification_status": "PASS"
+    }
+  ],
+  "latest_queue_item": {
+    "allowed_actions": [
+      "observe",
+      "review",
+      "classify"
+    ],
+    "blocked_actions": [
+      "install",
+      "execute",
+      "mutate_receiver",
+      "dispatch_downstream_execution"
+    ],
+    "constraints": [
+      "cge_must_revalidate_before_action",
+      "cge_queue_is_non_executing",
+      "no_execution_authority",
+      "no_install_authority",
+      "observe_only_handoff",
+      "review_before_action"
+    ],
+    "created_at_utc": "2026-06-14T21:10:59.780448Z",
+    "execution_authority": false,
+    "handoff_verdict": "READY_FOR_REVIEW",
+    "install_authority": false,
+    "latest_batch": {
+      "admitted_count": 1,
+      "batch_number": 1,
+      "batch_sha256": "44fe67e81ec5fb8efdbdd7defd76af0708fb5a0d5f470d8a021fe10d9994a3c7",
+      "fail_closed_count": 0,
+      "receipt_count": 1,
+      "verification_status": "PASS"
+    },
+    "queue_item_version": "1.0",
+    "queue_status": "QUEUED_FOR_REVIEW",
+    "review_required": true,
+    "source_path": "cge_handoff/sandbox_receipt_handoff.json",
+    "source_sha256": "04ce09adb4436de9e66a225f2496c939b265b534605846f1f1c3d7f22b920e50",
+    "source_type": "sandbox_receipt_handoff",
+    "verification_path": "cge_handoff/sandbox_receipt_handoff_verification.json",
+    "verification_sha256": "721033dc1dea1999b0191d298c11b70e01d1518ffd3db8b9f0e067af94ac8a7f",
+    "verification_status": "PASS"
+  },
+  "observe_only_count": 0,
+  "queue_scope": "CGE intake classification queue",
+  "queued_for_review_count": 1,
+  "sandbox_receipt_queue_version": "1.0"
+}
