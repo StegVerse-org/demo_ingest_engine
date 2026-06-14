@@ -8,6 +8,7 @@ on:
       - "tools/validate_sandbox_packet.py"
       - "tools/index_sandbox_receipts.py"
       - "tools/verify_sandbox_receipt_index.py"
+      - "tools/bind_sandbox_receipts_ledger.py"
       - ".github/workflows/sandbox-bridge-smoke-test.yml"
       - ".github/workflows/receive-sandbox-receipt.yml"
 
@@ -100,7 +101,13 @@ jobs:
           python tools/verify_sandbox_receipt_index.py \
             --receipts-dir smoke_reports/receipts
 
-      - name: Assert smoke-test counts and replay status
+      - name: Bind sandbox receipts to event ledger
+        run: |
+          python tools/bind_sandbox_receipts_ledger.py \
+            --receipts-dir smoke_reports/receipts \
+            --ledger-dir smoke_reports/event_ledger
+
+      - name: Assert smoke-test counts, replay status, and ledger binding
         run: |
           python - <<'PY'
           import json
@@ -111,15 +118,29 @@ jobs:
           summary_path = Path("smoke_reports/receipts/sandbox_receipt_index.md")
           verify_path = Path("smoke_reports/receipts/sandbox_receipt_index_verification.json")
           verify_summary_path = Path("smoke_reports/receipts/sandbox_receipt_index_verification.md")
+          ledger_batch_path = Path("smoke_reports/event_ledger/sandbox_receipt_batch_000001.json")
+          ledger_latest_path = Path("smoke_reports/event_ledger/latest_sandbox_receipt_batch.json")
+          ledger_verification_path = Path("smoke_reports/event_ledger/sandbox_receipt_ledger_verification.json")
+          ledger_summary_path = Path("smoke_reports/event_ledger/sandbox_receipt_ledger_verification.md")
 
-          assert index_path.exists(), "sandbox_receipt_index.json missing"
-          assert latest_path.exists(), "latest_sandbox_receipt.json missing"
-          assert summary_path.exists(), "sandbox_receipt_index.md missing"
-          assert verify_path.exists(), "sandbox_receipt_index_verification.json missing"
-          assert verify_summary_path.exists(), "sandbox_receipt_index_verification.md missing"
+          for path in [
+              index_path,
+              latest_path,
+              summary_path,
+              verify_path,
+              verify_summary_path,
+              ledger_batch_path,
+              ledger_latest_path,
+              ledger_verification_path,
+              ledger_summary_path,
+          ]:
+              assert path.exists(), f"{path} missing"
 
           index = json.loads(index_path.read_text(encoding="utf-8"))
           verification = json.loads(verify_path.read_text(encoding="utf-8"))
+          ledger_batch = json.loads(ledger_batch_path.read_text(encoding="utf-8"))
+          ledger_latest = json.loads(ledger_latest_path.read_text(encoding="utf-8"))
+          ledger_verification = json.loads(ledger_verification_path.read_text(encoding="utf-8"))
 
           assert index["receipt_count"] == 2, index
           assert index["parseable_count"] == 2, index
@@ -130,11 +151,19 @@ jobs:
           assert verification["receipt_file_count"] == 2, verification
           assert verification["recomputed_admitted_count"] == 1, verification
           assert verification["recomputed_fail_closed_count"] == 1, verification
+          assert ledger_batch["batch_number"] == 1, ledger_batch
+          assert ledger_batch["verification_status"] == "PASS", ledger_batch
+          assert ledger_batch["receipt_count"] == 2, ledger_batch
+          assert ledger_batch["admitted_count"] == 1, ledger_batch
+          assert ledger_batch["fail_closed_count"] == 1, ledger_batch
+          assert ledger_latest["batch_sha256"] == ledger_batch["batch_sha256"], ledger_latest
+          assert ledger_verification["status"] == "PASS", ledger_verification
+          assert ledger_verification["batch_count"] == 1, ledger_verification
 
-          print(json.dumps({"index": index, "verification": verification}, indent=2, sort_keys=True))
+          print(json.dumps({"index": index, "verification": verification, "ledger": ledger_verification}, indent=2, sort_keys=True))
           PY
 
-      - name: Upload smoke-test receipts, index, and verification
+      - name: Upload smoke-test receipts, index, verification, and ledger
         if: always()
         uses: actions/upload-artifact@v4
         with:
