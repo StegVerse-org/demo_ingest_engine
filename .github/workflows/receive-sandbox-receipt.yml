@@ -9,7 +9,7 @@ on:
       payload_json:
         description: Full bridge packet JSON for manual receipt testing
         required: true
-        default: '{"schema":"stegverse.entity_sandbox_bridge.v1","sender_repository":"StegGhost/entity-sandbox-runner","receiver_repository":"StegVerse-org/demo_ingest_engine","requested_mode":"review","boundary":{"sender_may_install_into_receiver":false,"receiver_must_fail_closed_on_install_request":true},"receipt":{"missing":true,"path":"manual"}}'
+        default: '{"schema":"stegverse.entity_sandbox_bridge.v1","sender_repository":"StegGhost/entity-sandbox-runner","receiver_repository":"StegVerse-org/demo_ingest_engine","event_type":"entity_sandbox_receipt","requested_mode":"review","boundary":{"sender_may_install_into_receiver":false,"receiver_must_fail_closed_on_install_request":true},"receipt":{"missing":true,"path":"manual"}}'
 
 permissions:
   contents: write
@@ -51,10 +51,16 @@ jobs:
         run: |
           python tools/validate_sandbox_packet.py \
             --packet received_sandbox_packet.json \
+            --policy configs/tvc_bridge_policy.json \
             --out-dir reports/sandbox_receipts \
             --receipt-path-file receipt_path.txt
 
-      - name: Commit admitted receipt record
+      - name: Index sandbox receipts
+        run: |
+          python tools/index_sandbox_receipts.py \
+            --receipts-dir reports/sandbox_receipts
+
+      - name: Commit admitted receipt record and index
         if: success()
         run: |
           git config user.name "github-actions[bot]"
@@ -63,7 +69,7 @@ jobs:
           git diff --cached --quiet || git commit -m "receipts: record StegGhost sandbox packet"
           git push
 
-      - name: Upload received packet and receipt
+      - name: Upload received packet, receipt, and index
         if: always()
         uses: actions/upload-artifact@v4
         with:
