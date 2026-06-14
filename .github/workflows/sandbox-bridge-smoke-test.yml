@@ -7,6 +7,7 @@ on:
       - "configs/tvc_bridge_policy.json"
       - "tools/validate_sandbox_packet.py"
       - "tools/index_sandbox_receipts.py"
+      - "tools/verify_sandbox_receipt_index.py"
       - ".github/workflows/sandbox-bridge-smoke-test.yml"
       - ".github/workflows/receive-sandbox-receipt.yml"
 
@@ -96,6 +97,11 @@ jobs:
 
       - name: Verify sandbox receipt index
         run: |
+          python tools/verify_sandbox_receipt_index.py \
+            --receipts-dir smoke_reports/receipts
+
+      - name: Assert smoke-test counts and replay status
+        run: |
           python - <<'PY'
           import json
           from pathlib import Path
@@ -103,22 +109,32 @@ jobs:
           index_path = Path("smoke_reports/receipts/sandbox_receipt_index.json")
           latest_path = Path("smoke_reports/receipts/latest_sandbox_receipt.json")
           summary_path = Path("smoke_reports/receipts/sandbox_receipt_index.md")
+          verify_path = Path("smoke_reports/receipts/sandbox_receipt_index_verification.json")
+          verify_summary_path = Path("smoke_reports/receipts/sandbox_receipt_index_verification.md")
 
           assert index_path.exists(), "sandbox_receipt_index.json missing"
           assert latest_path.exists(), "latest_sandbox_receipt.json missing"
           assert summary_path.exists(), "sandbox_receipt_index.md missing"
+          assert verify_path.exists(), "sandbox_receipt_index_verification.json missing"
+          assert verify_summary_path.exists(), "sandbox_receipt_index_verification.md missing"
 
           index = json.loads(index_path.read_text(encoding="utf-8"))
+          verification = json.loads(verify_path.read_text(encoding="utf-8"))
+
           assert index["receipt_count"] == 2, index
           assert index["parseable_count"] == 2, index
           assert index["admitted_count"] == 1, index
           assert index["fail_closed_count"] == 1, index
           assert index["latest_receipt"] is not None, index
+          assert verification["status"] == "PASS", verification
+          assert verification["receipt_file_count"] == 2, verification
+          assert verification["recomputed_admitted_count"] == 1, verification
+          assert verification["recomputed_fail_closed_count"] == 1, verification
 
-          print(json.dumps(index, indent=2, sort_keys=True))
+          print(json.dumps({"index": index, "verification": verification}, indent=2, sort_keys=True))
           PY
 
-      - name: Upload smoke-test receipts and index
+      - name: Upload smoke-test receipts, index, and verification
         if: always()
         uses: actions/upload-artifact@v4
         with:
