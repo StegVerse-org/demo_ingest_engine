@@ -74,36 +74,28 @@ def build_queue(handoff_dir: Path, queue_dir: Path) -> dict[str, Any]:
     verification = _load_json(verification_path)
     item = _make_queue_item(handoff, verification, handoff_path, verification_path)
 
-    existing_items: list[dict[str, Any]] = []
-    queue_path = queue_dir / "sandbox_receipt_queue.json"
-    if queue_path.exists():
-        try:
-            previous = _load_json(queue_path)
-            if isinstance(previous.get("items"), list):
-                existing_items = previous["items"]
-        except Exception:
-            existing_items = []
+    # This queue is a regenerated intake view over the latest verified handoff.
+    # Do not retain stale regenerated items because their source hashes may no longer
+    # match after upstream receipt/index/ledger artifacts are rebuilt.
+    items = [item]
 
-    source_hashes = {entry.get("source_sha256") for entry in existing_items if isinstance(entry, dict)}
-    if item["source_sha256"] not in source_hashes:
-        existing_items.append(item)
-
-    queued_count = sum(1 for entry in existing_items if entry.get("queue_status") == "QUEUED_FOR_REVIEW")
-    observe_count = sum(1 for entry in existing_items if entry.get("queue_status") == "OBSERVE_ONLY")
-    blocked_count = sum(1 for entry in existing_items if entry.get("queue_status") == "BLOCKED")
+    queued_count = sum(1 for entry in items if entry.get("queue_status") == "QUEUED_FOR_REVIEW")
+    observe_count = sum(1 for entry in items if entry.get("queue_status") == "OBSERVE_ONLY")
+    blocked_count = sum(1 for entry in items if entry.get("queue_status") == "BLOCKED")
 
     return {
         "sandbox_receipt_queue_version": QUEUE_VERSION,
         "generated_at_utc": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
         "queue_scope": "CGE intake classification queue",
+        "queue_mode": "latest_verified_handoff_view",
         "execution_authority": False,
         "install_authority": False,
-        "item_count": len(existing_items),
+        "item_count": len(items),
         "queued_for_review_count": queued_count,
         "observe_only_count": observe_count,
         "blocked_count": blocked_count,
         "latest_queue_item": item,
-        "items": existing_items,
+        "items": items,
     }
 
 
@@ -123,6 +115,7 @@ def write_queue(queue: dict[str, Any], queue_dir: Path) -> None:
         f"- Queue version: `{queue['sandbox_receipt_queue_version']}`",
         f"- Generated: `{queue['generated_at_utc']}`",
         f"- Scope: `{queue['queue_scope']}`",
+        f"- Mode: `{queue['queue_mode']}`",
         f"- Execution authority: `{queue['execution_authority']}`",
         f"- Install authority: `{queue['install_authority']}`",
         f"- Item count: `{queue['item_count']}`",
