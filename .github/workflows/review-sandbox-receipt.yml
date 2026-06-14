@@ -1,0 +1,74 @@
+name: Review Sandbox Receipt Queue Item
+
+on:
+  workflow_dispatch:
+    inputs:
+      reviewer:
+        description: Reviewer name or handle
+        required: true
+        default: Rigel Randolph
+      verdict:
+        description: Human review verdict
+        required: true
+        type: choice
+        options:
+          - APPROVE_FOR_PLANNING
+          - HOLD_FOR_MORE_EVIDENCE
+          - REJECT
+        default: HOLD_FOR_MORE_EVIDENCE
+      rationale:
+        description: Reason for the review verdict
+        required: true
+        default: Manual review receipt generated from verified CGE intake queue.
+      review_scope:
+        description: Scope of review
+        required: true
+        default: sandbox_receipt_queue_latest_item
+
+permissions:
+  contents: write
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Org ingestion engine
+        uses: actions/checkout@v4
+
+      - name: Verify CGE queue before review
+        run: |
+          python tools/verify_sandbox_receipt_queue.py \
+            --queue-dir cge_intake
+
+      - name: Create review receipt
+        run: |
+          python tools/create_sandbox_review_receipt.py \
+            --queue-dir cge_intake \
+            --review-dir review_receipts \
+            --reviewer "${REVIEWER}" \
+            --verdict "${VERDICT}" \
+            --rationale "${RATIONALE}" \
+            --review-scope "${REVIEW_SCOPE}"
+        env:
+          REVIEWER: ${{ inputs.reviewer }}
+          VERDICT: ${{ inputs.verdict }}
+          RATIONALE: ${{ inputs.rationale }}
+          REVIEW_SCOPE: ${{ inputs.review_scope }}
+
+      - name: Commit review receipt
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "actions@github.com"
+          git add cge_intake review_receipts
+          git diff --cached --quiet || git commit -m "review: record sandbox receipt review"
+          git push
+
+      - name: Upload review receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sandbox-receipt-review
+          path: |
+            cge_intake/
+            review_receipts/
