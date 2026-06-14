@@ -1,0 +1,40 @@
+{
+  "allowed_next_steps": [
+    "observe",
+    "request_more_evidence"
+  ],
+  "blocked_actions": [
+    "install",
+    "execute",
+    "mutate_receiver",
+    "dispatch_downstream_execution"
+  ],
+  "created_at_utc": "2026-06-14T21:17:17.757351Z",
+  "execution_authority": false,
+  "install_authority": false,
+  "latest_queue_item_source": {
+    "handoff_verdict": "READY_FOR_REVIEW",
+    "path": "cge_intake/latest_queue_item.json",
+    "queue_status": "QUEUED_FOR_REVIEW",
+    "review_required": true,
+    "sha256": "b0c7701fd831f9391a63a7a1e29c64d1dc5d0336c8c501d34bc1d9284e53434c",
+    "source_sha256": "b19ecd7af0df6343d1e428ee3fbd834a4c30cba8e0ae48e2482bee028326dc72"
+  },
+  "planning_authority": false,
+  "queue_source": {
+    "item_count": 1,
+    "path": "cge_intake/sandbox_receipt_queue.json",
+    "queued_for_review_count": 1,
+    "sha256": "22f49fcb94f69c8a95fd1884627c56e8695c86cea03fd0140d97f455deddd436"
+  },
+  "queue_verification_source": {
+    "path": "cge_intake/sandbox_receipt_queue_verification.json",
+    "sha256": "7ab4f3014421c53e4e7028001be6a271c1cc286a9b9f18ce0bf0a1527e394f59",
+    "status": "PASS"
+  },
+  "rationale": "Manual review receipt generated from verified CGE intake queue.",
+  "review_scope": "sandbox_receipt_queue_latest_item",
+  "reviewer": "Rigel Randolph",
+  "sandbox_receipt_review_version": "1.0",
+  "verdict": "HOLD_FOR_MORE_EVIDENCE"
+}

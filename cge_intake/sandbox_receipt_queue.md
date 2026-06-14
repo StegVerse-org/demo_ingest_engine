@@ -1,8 +1,9 @@
 # CGE Sandbox Receipt Intake Queue
 
 - Queue version: `1.0`
-- Generated: `2026-06-14T21:10:59.780568Z`
+- Generated: `2026-06-14T21:17:17.658716Z`
 - Scope: `CGE intake classification queue`
+- Mode: `latest_verified_handoff_view`
 - Execution authority: `False`
 - Install authority: `False`
 - Item count: `1`
@@ -17,10 +18,10 @@
 - Review required: `True`
 - Execution authority: `False`
 - Install authority: `False`
-- Source SHA-256: `04ce09adb4436de9e66a225f2496c939b265b534605846f1f1c3d7f22b920e50`
+- Source SHA-256: `b19ecd7af0df6343d1e428ee3fbd834a4c30cba8e0ae48e2482bee028326dc72`
 
 ## Items
 
 | Created UTC | Status | Verdict | Review Required | Batch | Source SHA-256 |
 |---|---|---|---|---|---|
-| 2026-06-14T21:10:59.780448Z | QUEUED_FOR_REVIEW | READY_FOR_REVIEW | True | 1 | `04ce09adb4436de9e66a225f2496c939b265b534605846f1f1c3d7f22b920e50` |
+| 2026-06-14T21:17:17.658647Z | QUEUED_FOR_REVIEW | READY_FOR_REVIEW | True | 2 | `b19ecd7af0df6343d1e428ee3fbd834a4c30cba8e0ae48e2482bee028326dc72` |

@@ -1,7 +1,7 @@
 # Sandbox Receipt CGE Handoff Verification
 
 - Version: `1.0`
-- Generated: `2026-06-14T21:10:59.716480Z`
+- Generated: `2026-06-14T21:17:17.619366Z`
 - Status: **PASS**
 - Verdict: `READY_FOR_REVIEW`
 - Scope: `classification_only`

@@ -1,0 +1,27 @@
+{
+  "generated_at_utc": "2026-06-14T21:17:17.757862Z",
+  "latest_review": {
+    "created_at_utc": "2026-06-14T21:17:17.757351Z",
+    "execution_authority": false,
+    "install_authority": false,
+    "path": "review_receipts/sandbox_receipt_review_20260614T211717Z.json",
+    "planning_authority": false,
+    "reviewer": "Rigel Randolph",
+    "sha256": "33fe2d6d898762f1e0ee0f709985015a14d018d5d9ae6df78d76cd25065504ba",
+    "verdict": "HOLD_FOR_MORE_EVIDENCE"
+  },
+  "review_count": 1,
+  "reviews": [
+    {
+      "created_at_utc": "2026-06-14T21:17:17.757351Z",
+      "execution_authority": false,
+      "install_authority": false,
+      "path": "review_receipts/sandbox_receipt_review_20260614T211717Z.json",
+      "planning_authority": false,
+      "reviewer": "Rigel Randolph",
+      "sha256": "33fe2d6d898762f1e0ee0f709985015a14d018d5d9ae6df78d76cd25065504ba",
+      "verdict": "HOLD_FOR_MORE_EVIDENCE"
+    }
+  ],
+  "sandbox_receipt_review_index_version": "1.0"
+}

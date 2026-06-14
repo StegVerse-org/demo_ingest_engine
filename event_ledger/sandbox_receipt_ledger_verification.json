@@ -1,5 +1,5 @@
 {
-  "batch_count": 1,
+  "batch_count": 2,
   "batches": [
     {
       "admitted_count": 1,
@@ -10,6 +10,16 @@
       "previous_batch_sha256": null,
       "receipt_count": 1,
       "verification_status": "PASS"
+    },
+    {
+      "admitted_count": 1,
+      "batch_number": 2,
+      "batch_sha256": "d4678ecd817b17a6dfec5e263cc4398e70bf2383ff1b177c689f12aef5e9e996",
+      "fail_closed_count": 0,
+      "path": "event_ledger/sandbox_receipt_batch_000002.json",
+      "previous_batch_sha256": "44fe67e81ec5fb8efdbdd7defd76af0708fb5a0d5f470d8a021fe10d9994a3c7",
+      "receipt_count": 1,
+      "verification_status": "PASS"
     }
   ],
   "checks_failed": [],
@@ -18,16 +28,20 @@
     "batch_number_matches:sandbox_receipt_batch_000001.json",
     "previous_hash_matches:sandbox_receipt_batch_000001.json",
     "verification_status_pass:sandbox_receipt_batch_000001.json",
+    "batch_hash_matches:sandbox_receipt_batch_000002.json",
+    "batch_number_matches:sandbox_receipt_batch_000002.json",
+    "previous_hash_matches:sandbox_receipt_batch_000002.json",
+    "verification_status_pass:sandbox_receipt_batch_000002.json",
     "latest_pointer_matches_last_batch"
   ],
-  "generated_at_utc": "2026-06-14T21:10:59.595561Z",
+  "generated_at_utc": "2026-06-14T21:17:17.540055Z",
   "latest_batch": {
     "admitted_count": 1,
-    "batch_number": 1,
-    "batch_sha256": "44fe67e81ec5fb8efdbdd7defd76af0708fb5a0d5f470d8a021fe10d9994a3c7",
+    "batch_number": 2,
+    "batch_sha256": "d4678ecd817b17a6dfec5e263cc4398e70bf2383ff1b177c689f12aef5e9e996",
     "fail_closed_count": 0,
-    "path": "event_ledger/sandbox_receipt_batch_000001.json",
-    "previous_batch_sha256": null,
+    "path": "event_ledger/sandbox_receipt_batch_000002.json",
+    "previous_batch_sha256": "44fe67e81ec5fb8efdbdd7defd76af0708fb5a0d5f470d8a021fe10d9994a3c7",
     "receipt_count": 1,
     "verification_status": "PASS"
   },
