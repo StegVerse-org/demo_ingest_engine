@@ -89,6 +89,11 @@ jobs:
             --handoff-dir cge_handoff \
             --queue-dir cge_intake
 
+      - name: Verify CGE queue
+        run: |
+          python tools/verify_sandbox_receipt_queue.py \
+            --queue-dir cge_intake
+
       - name: Commit generated receipt artifacts
         if: success()
         run: |
