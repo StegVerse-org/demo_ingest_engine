@@ -36,10 +36,20 @@ jobs:
       - name: Checkout Org ingestion engine
         uses: actions/checkout@v4
 
-      - name: Verify CGE queue before review
+      - name: Rebuild CGE queue when possible
         run: |
-          python tools/verify_sandbox_receipt_queue.py \
-            --queue-dir cge_intake
+          if [ ! -d "reports/sandbox_receipts" ]; then
+            echo "::error::No committed reports/sandbox_receipts directory was found. Run 'Receive StegGhost Sandbox Receipt' first, then rerun this review workflow. The smoke test proves the path but does not commit smoke_reports as review evidence."
+            exit 1
+          fi
+
+          python tools/index_sandbox_receipts.py --receipts-dir reports/sandbox_receipts
+          python tools/verify_sandbox_receipt_index.py --receipts-dir reports/sandbox_receipts
+          python tools/bind_sandbox_receipts_ledger.py --receipts-dir reports/sandbox_receipts --ledger-dir event_ledger
+          python tools/classify_sandbox_receipt_handoff.py --ledger-dir event_ledger --handoff-dir cge_handoff
+          python tools/verify_sandbox_receipt_handoff.py --ledger-dir event_ledger --handoff-dir cge_handoff
+          python tools/build_sandbox_receipt_queue.py --handoff-dir cge_handoff --queue-dir cge_intake
+          python tools/verify_sandbox_receipt_queue.py --queue-dir cge_intake
 
       - name: Create review receipt
         run: |
@@ -60,7 +70,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "actions@github.com"
-          git add cge_intake review_receipts
+          git add reports/sandbox_receipts event_ledger cge_handoff cge_intake review_receipts
           git diff --cached --quiet || git commit -m "review: record sandbox receipt review"
           git push
 
@@ -70,5 +80,8 @@ jobs:
         with:
           name: sandbox-receipt-review
           path: |
+            reports/sandbox_receipts/
+            event_ledger/
+            cge_handoff/
             cge_intake/
             review_receipts/
