@@ -83,16 +83,22 @@ jobs:
             --ledger-dir event_ledger \
             --handoff-dir cge_handoff
 
-      - name: Commit admitted receipt record, index, verification, ledger, and handoff
+      - name: Build CGE queue
+        run: |
+          python tools/build_sandbox_receipt_queue.py \
+            --handoff-dir cge_handoff \
+            --queue-dir cge_intake
+
+      - name: Commit generated receipt artifacts
         if: success()
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "actions@github.com"
-          git add reports/sandbox_receipts event_ledger cge_handoff
+          git add reports/sandbox_receipts event_ledger cge_handoff cge_intake
           git diff --cached --quiet || git commit -m "receipts: record StegGhost sandbox packet"
           git push
 
-      - name: Upload received packet, receipt, index, verification, ledger, and handoff
+      - name: Upload generated receipt artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -102,4 +108,5 @@ jobs:
             reports/sandbox_receipts/
             event_ledger/
             cge_handoff/
+            cge_intake/
             receipt_path.txt
