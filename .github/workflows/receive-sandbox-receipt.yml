@@ -71,16 +71,22 @@ jobs:
             --receipts-dir reports/sandbox_receipts \
             --ledger-dir event_ledger
 
-      - name: Commit admitted receipt record, index, verification, and ledger
+      - name: Classify CGE handoff
+        run: |
+          python tools/classify_sandbox_receipt_handoff.py \
+            --ledger-dir event_ledger \
+            --handoff-dir cge_handoff
+
+      - name: Commit admitted receipt record, index, verification, ledger, and handoff
         if: success()
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "actions@github.com"
-          git add reports/sandbox_receipts event_ledger
+          git add reports/sandbox_receipts event_ledger cge_handoff
           git diff --cached --quiet || git commit -m "receipts: record StegGhost sandbox packet"
           git push
 
-      - name: Upload received packet, receipt, index, verification, and ledger
+      - name: Upload received packet, receipt, index, verification, ledger, and handoff
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -89,4 +95,5 @@ jobs:
             received_sandbox_packet.json
             reports/sandbox_receipts/
             event_ledger/
+            cge_handoff/
             receipt_path.txt
