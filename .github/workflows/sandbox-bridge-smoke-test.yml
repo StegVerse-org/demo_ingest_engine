@@ -6,6 +6,7 @@ on:
     paths:
       - "configs/tvc_bridge_policy.json"
       - "tools/validate_sandbox_packet.py"
+      - "tools/index_sandbox_receipts.py"
       - ".github/workflows/sandbox-bridge-smoke-test.yml"
       - ".github/workflows/receive-sandbox-receipt.yml"
 
@@ -48,7 +49,7 @@ jobs:
           python tools/validate_sandbox_packet.py \
             --packet accepted_review_packet.json \
             --policy configs/tvc_bridge_policy.json \
-            --out-dir smoke_reports/accepted \
+            --out-dir smoke_reports/receipts \
             --receipt-path-file accepted_receipt_path.txt
 
       - name: Build refused install packet
@@ -79,7 +80,7 @@ jobs:
           if python tools/validate_sandbox_packet.py \
             --packet refused_install_packet.json \
             --policy configs/tvc_bridge_policy.json \
-            --out-dir smoke_reports/refused \
+            --out-dir smoke_reports/receipts \
             --receipt-path-file refused_receipt_path.txt
           then
             echo "Install packet was admitted unexpectedly."
@@ -88,7 +89,36 @@ jobs:
 
           echo "Install packet failed closed as expected."
 
-      - name: Upload smoke-test receipts
+      - name: Build sandbox receipt index
+        run: |
+          python tools/index_sandbox_receipts.py \
+            --receipts-dir smoke_reports/receipts
+
+      - name: Verify sandbox receipt index
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          index_path = Path("smoke_reports/receipts/sandbox_receipt_index.json")
+          latest_path = Path("smoke_reports/receipts/latest_sandbox_receipt.json")
+          summary_path = Path("smoke_reports/receipts/sandbox_receipt_index.md")
+
+          assert index_path.exists(), "sandbox_receipt_index.json missing"
+          assert latest_path.exists(), "latest_sandbox_receipt.json missing"
+          assert summary_path.exists(), "sandbox_receipt_index.md missing"
+
+          index = json.loads(index_path.read_text(encoding="utf-8"))
+          assert index["receipt_count"] == 2, index
+          assert index["parseable_count"] == 2, index
+          assert index["admitted_count"] == 1, index
+          assert index["fail_closed_count"] == 1, index
+          assert index["latest_receipt"] is not None, index
+
+          print(json.dumps(index, indent=2, sort_keys=True))
+          PY
+
+      - name: Upload smoke-test receipts and index
         if: always()
         uses: actions/upload-artifact@v4
         with:
