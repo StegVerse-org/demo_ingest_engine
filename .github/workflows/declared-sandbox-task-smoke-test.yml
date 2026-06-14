@@ -1,0 +1,152 @@
+name: Declared Sandbox Task Smoke Test
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - configs/stegghost_declared_task_policy.json
+      - tools/validate_declared_sandbox_task.py
+      - .github/workflows/declared-sandbox-task-smoke-test.yml
+
+permissions:
+  contents: read
+
+jobs:
+  declared-task-smoke-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Org ingestion engine
+        uses: actions/checkout@v4
+
+      - name: Build admissible declared sandbox test manifest
+        run: |
+          mkdir -p smoke_reports/declared_tasks smoke_reports/manifest_receipts
+          cat > smoke_reports/declared_tasks/admissible_manifest.json <<'JSON'
+          {
+            "schema": "stegverse.declared_sandbox_test_task.v1",
+            "task_type": "sandbox_test",
+            "requested_mode": "test",
+            "submitter": {
+              "interface": "StegVerse-org LLM adapter",
+              "submitter_type": "llm",
+              "submitter_ref": "smoke-test"
+            },
+            "target": {
+              "recipient": "StegGhost ingestion",
+              "sandbox_only": true
+            },
+            "test": {
+              "name": "smoke_declared_task_validation",
+              "input_ref": "smoke_reports/declared_tasks/admissible_manifest.json",
+              "expected_output": "bounded_result_receipt"
+            },
+            "boundary": {
+              "sandbox_only": true,
+              "return_result_only": true,
+              "conversation_loop_allowed": false,
+              "human_review_required": false,
+              "install_authority": false,
+              "execution_authority_outside_sandbox": false,
+              "repository_mutation_allowed": false
+            }
+          }
+          JSON
+
+      - name: Validate admissible declared sandbox test manifest
+        run: |
+          python tools/validate_declared_sandbox_task.py \
+            --manifest smoke_reports/declared_tasks/admissible_manifest.json \
+            --policy configs/stegghost_declared_task_policy.json \
+            --out-dir smoke_reports/manifest_receipts/admissible \
+            --receipt-path-file smoke_reports/admissible_receipt_path.txt
+
+      - name: Assert admissible receipt
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          receipt = json.loads(Path('smoke_reports/manifest_receipts/admissible/latest_declared_task_manifest_receipt.json').read_text())
+          assert receipt['verdict'] == 'ADMISSIBLE_TEST_TASK', receipt
+          assert receipt['admissible'] is True, receipt
+          assert receipt['route_to_stegghost_ingestion'] is True, receipt
+          assert receipt['emit_result_receipt'] is True, receipt
+          assert receipt['return_result_to_submitter'] is True, receipt
+          assert receipt['install_authority'] is False, receipt
+          assert receipt['execution_authority_outside_sandbox'] is False, receipt
+          assert receipt['planning_authority'] is False, receipt
+          assert receipt['conversation_loop_allowed'] is False, receipt
+          PY
+
+      - name: Build blocked non-test manifest
+        run: |
+          cat > smoke_reports/declared_tasks/blocked_manifest.json <<'JSON'
+          {
+            "schema": "stegverse.declared_sandbox_test_task.v1",
+            "task_type": "install",
+            "requested_mode": "install",
+            "submitter": {
+              "interface": "StegVerse-org SDK",
+              "submitter_type": "human",
+              "submitter_ref": "smoke-test"
+            },
+            "target": {
+              "recipient": "StegGhost ingestion",
+              "sandbox_only": false
+            },
+            "test": {
+              "name": "blocked_install_attempt",
+              "input_ref": "smoke_reports/declared_tasks/blocked_manifest.json"
+            },
+            "boundary": {
+              "sandbox_only": false,
+              "return_result_only": false,
+              "conversation_loop_allowed": true,
+              "human_review_required": true,
+              "install_authority": true,
+              "execution_authority_outside_sandbox": true,
+              "repository_mutation_allowed": true
+            }
+          }
+          JSON
+
+      - name: Validate blocked non-test manifest fails closed
+        run: |
+          set +e
+          python tools/validate_declared_sandbox_task.py \
+            --manifest smoke_reports/declared_tasks/blocked_manifest.json \
+            --policy configs/stegghost_declared_task_policy.json \
+            --out-dir smoke_reports/manifest_receipts/blocked \
+            --receipt-path-file smoke_reports/blocked_receipt_path.txt
+          status=$?
+          set -e
+          if [ "$status" -eq 0 ]; then
+            echo "::error::Blocked manifest was accepted."
+            exit 1
+          fi
+
+      - name: Assert blocked receipt fails closed
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          receipt = json.loads(Path('smoke_reports/manifest_receipts/blocked/latest_declared_task_manifest_receipt.json').read_text())
+          assert receipt['verdict'] == 'FAIL_CLOSED', receipt
+          assert receipt['admissible'] is False, receipt
+          assert receipt['route_to_stegghost_ingestion'] is False, receipt
+          assert receipt['emit_result_receipt'] is False, receipt
+          assert receipt['return_result_to_submitter'] is False, receipt
+          assert receipt['install_authority'] is False, receipt
+          assert receipt['execution_authority_outside_sandbox'] is False, receipt
+          assert receipt['planning_authority'] is False, receipt
+          assert receipt['conversation_loop_allowed'] is False, receipt
+          assert receipt['checks_failed'], receipt
+          PY
+
+      - name: Upload declared task smoke-test artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: declared-sandbox-task-smoke-test
+          path: |
+            smoke_reports/
