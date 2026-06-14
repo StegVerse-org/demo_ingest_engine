@@ -12,6 +12,7 @@ on:
       - "tools/classify_sandbox_receipt_handoff.py"
       - "tools/verify_sandbox_receipt_handoff.py"
       - "tools/build_sandbox_receipt_queue.py"
+      - "tools/verify_sandbox_receipt_queue.py"
       - ".github/workflows/sandbox-bridge-smoke-test.yml"
       - ".github/workflows/receive-sandbox-receipt.yml"
 
@@ -92,106 +93,28 @@ jobs:
             exit 1
           fi
 
-          echo "Install packet failed closed as expected."
-
-      - name: Build sandbox receipt index
+      - name: Build and verify receipt evidence stack
         run: |
-          python tools/index_sandbox_receipts.py \
-            --receipts-dir smoke_reports/receipts
+          python tools/index_sandbox_receipts.py --receipts-dir smoke_reports/receipts
+          python tools/verify_sandbox_receipt_index.py --receipts-dir smoke_reports/receipts
+          python tools/bind_sandbox_receipts_ledger.py --receipts-dir smoke_reports/receipts --ledger-dir smoke_reports/event_ledger
+          python tools/classify_sandbox_receipt_handoff.py --ledger-dir smoke_reports/event_ledger --handoff-dir smoke_reports/cge_handoff
+          python tools/verify_sandbox_receipt_handoff.py --ledger-dir smoke_reports/event_ledger --handoff-dir smoke_reports/cge_handoff
+          python tools/build_sandbox_receipt_queue.py --handoff-dir smoke_reports/cge_handoff --queue-dir smoke_reports/cge_intake
+          python tools/verify_sandbox_receipt_queue.py --queue-dir smoke_reports/cge_intake
 
-      - name: Verify sandbox receipt index
-        run: |
-          python tools/verify_sandbox_receipt_index.py \
-            --receipts-dir smoke_reports/receipts
-
-      - name: Bind sandbox receipts to event ledger
-        run: |
-          python tools/bind_sandbox_receipts_ledger.py \
-            --receipts-dir smoke_reports/receipts \
-            --ledger-dir smoke_reports/event_ledger
-
-      - name: Classify CGE handoff
-        run: |
-          python tools/classify_sandbox_receipt_handoff.py \
-            --ledger-dir smoke_reports/event_ledger \
-            --handoff-dir smoke_reports/cge_handoff
-
-      - name: Verify CGE handoff
-        run: |
-          python tools/verify_sandbox_receipt_handoff.py \
-            --ledger-dir smoke_reports/event_ledger \
-            --handoff-dir smoke_reports/cge_handoff
-
-      - name: Build CGE queue
-        run: |
-          python tools/build_sandbox_receipt_queue.py \
-            --handoff-dir smoke_reports/cge_handoff \
-            --queue-dir smoke_reports/cge_intake
-
-      - name: Assert smoke-test counts, replay status, ledger binding, handoff, and queue
+      - name: Assert queue verification passed
         run: |
           python - <<'PY'
           import json
           from pathlib import Path
-
-          index_path = Path("smoke_reports/receipts/sandbox_receipt_index.json")
-          verify_path = Path("smoke_reports/receipts/sandbox_receipt_index_verification.json")
-          ledger_batch_path = Path("smoke_reports/event_ledger/sandbox_receipt_batch_000001.json")
-          ledger_latest_path = Path("smoke_reports/event_ledger/latest_sandbox_receipt_batch.json")
-          ledger_verification_path = Path("smoke_reports/event_ledger/sandbox_receipt_ledger_verification.json")
-          handoff_path = Path("smoke_reports/cge_handoff/sandbox_receipt_handoff.json")
-          handoff_verification_path = Path("smoke_reports/cge_handoff/sandbox_receipt_handoff_verification.json")
-          queue_path = Path("smoke_reports/cge_intake/sandbox_receipt_queue.json")
-          latest_queue_item_path = Path("smoke_reports/cge_intake/latest_queue_item.json")
-          queue_summary_path = Path("smoke_reports/cge_intake/sandbox_receipt_queue.md")
-
-          for path in [
-              index_path,
-              verify_path,
-              ledger_batch_path,
-              ledger_latest_path,
-              ledger_verification_path,
-              handoff_path,
-              handoff_verification_path,
-              queue_path,
-              latest_queue_item_path,
-              queue_summary_path,
-          ]:
-              assert path.exists(), f"{path} missing"
-
-          index = json.loads(index_path.read_text(encoding="utf-8"))
-          verification = json.loads(verify_path.read_text(encoding="utf-8"))
-          ledger_batch = json.loads(ledger_batch_path.read_text(encoding="utf-8"))
-          ledger_latest = json.loads(ledger_latest_path.read_text(encoding="utf-8"))
-          ledger_verification = json.loads(ledger_verification_path.read_text(encoding="utf-8"))
-          handoff = json.loads(handoff_path.read_text(encoding="utf-8"))
-          handoff_verification = json.loads(handoff_verification_path.read_text(encoding="utf-8"))
-          queue = json.loads(queue_path.read_text(encoding="utf-8"))
-          latest_item = json.loads(latest_queue_item_path.read_text(encoding="utf-8"))
-
-          assert index["receipt_count"] == 2, index
-          assert index["admitted_count"] == 1, index
-          assert index["fail_closed_count"] == 1, index
-          assert verification["status"] == "PASS", verification
-          assert ledger_batch["batch_number"] == 1, ledger_batch
-          assert ledger_latest["batch_sha256"] == ledger_batch["batch_sha256"], ledger_latest
-          assert ledger_verification["status"] == "PASS", ledger_verification
-          assert handoff["verdict"] == "READY_FOR_REVIEW", handoff
-          assert handoff["execution_authority"] is False, handoff
-          assert handoff["install_authority"] is False, handoff
-          assert handoff_verification["status"] == "PASS", handoff_verification
-          assert queue["item_count"] == 1, queue
-          assert queue["queued_for_review_count"] == 1, queue
-          assert queue["execution_authority"] is False, queue
-          assert queue["install_authority"] is False, queue
-          assert latest_item["queue_status"] == "QUEUED_FOR_REVIEW", latest_item
-          assert latest_item["review_required"] is True, latest_item
-          assert latest_item["execution_authority"] is False, latest_item
-          assert latest_item["install_authority"] is False, latest_item
-          assert "install" in latest_item["blocked_actions"], latest_item
-          assert "execute" in latest_item["blocked_actions"], latest_item
-
-          print(json.dumps({"queue": queue, "latest_item": latest_item}, indent=2, sort_keys=True))
+          result = json.loads(Path("smoke_reports/cge_intake/sandbox_receipt_queue_verification.json").read_text(encoding="utf-8"))
+          assert result["status"] == "PASS", result
+          assert result["item_count"] == 1, result
+          assert result["queued_for_review_count"] == 1, result
+          assert result["install_authority"] is False, result
+          assert result["execution_authority"] is False, result
+          print(json.dumps(result, indent=2, sort_keys=True))
           PY
 
       - name: Upload smoke-test receipts and queue
