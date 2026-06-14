@@ -29,6 +29,18 @@ staging/*
 # Reports
 reports/*
 !reports/.gitkeep
+!reports/sandbox_receipts/
+!reports/sandbox_receipts/**
+
+# Governed generated evidence
+!event_ledger/
+!event_ledger/**
+!cge_handoff/
+!cge_handoff/**
+!cge_intake/
+!cge_intake/**
+!review_receipts/
+!review_receipts/**
 
 # Deprecated archives
 deprecated/*
