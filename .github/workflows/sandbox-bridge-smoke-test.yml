@@ -4,6 +4,7 @@ on:
   workflow_dispatch:
   push:
     paths:
+      - "configs/tvc_bridge_policy.json"
       - "tools/validate_sandbox_packet.py"
       - ".github/workflows/sandbox-bridge-smoke-test.yml"
       - ".github/workflows/receive-sandbox-receipt.yml"
@@ -26,6 +27,7 @@ jobs:
             "schema": "stegverse.entity_sandbox_bridge.v1",
             "sender_repository": "StegGhost/entity-sandbox-runner",
             "receiver_repository": "StegVerse-org/demo_ingest_engine",
+            "event_type": "entity_sandbox_receipt",
             "requested_mode": "review",
             "boundary": {
               "sender_role": "sandbox_actor",
@@ -41,10 +43,11 @@ jobs:
           }
           JSON
 
-      - name: Accepted review packet must pass
+      - name: Accepted review packet must pass under TVC policy
         run: |
           python tools/validate_sandbox_packet.py \
             --packet accepted_review_packet.json \
+            --policy configs/tvc_bridge_policy.json \
             --out-dir smoke_reports/accepted \
             --receipt-path-file accepted_receipt_path.txt
 
@@ -55,6 +58,7 @@ jobs:
             "schema": "stegverse.entity_sandbox_bridge.v1",
             "sender_repository": "StegGhost/entity-sandbox-runner",
             "receiver_repository": "StegVerse-org/demo_ingest_engine",
+            "event_type": "entity_sandbox_receipt",
             "requested_mode": "install",
             "boundary": {
               "sender_role": "sandbox_actor",
@@ -70,10 +74,11 @@ jobs:
           }
           JSON
 
-      - name: Install packet must fail closed
+      - name: Install packet must fail closed under TVC policy
         run: |
           if python tools/validate_sandbox_packet.py \
             --packet refused_install_packet.json \
+            --policy configs/tvc_bridge_policy.json \
             --out-dir smoke_reports/refused \
             --receipt-path-file refused_receipt_path.txt
           then
@@ -91,6 +96,7 @@ jobs:
           path: |
             accepted_review_packet.json
             refused_install_packet.json
+            configs/tvc_bridge_policy.json
             smoke_reports/
             accepted_receipt_path.txt
             refused_receipt_path.txt
