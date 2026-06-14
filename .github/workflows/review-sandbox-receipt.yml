@@ -1,4 +1,4 @@
-name: Review Sandbox Receipt Queue Item
+name: Experimental Governance Review Utility
 
 on:
   workflow_dispatch:
@@ -8,7 +8,7 @@ on:
         required: true
         default: Rigel Randolph
       verdict:
-        description: Human review verdict
+        description: Future governance-review verdict; not part of active sandbox-testing path
         required: true
         type: choice
         options:
@@ -17,13 +17,13 @@ on:
           - REJECT
         default: HOLD_FOR_MORE_EVIDENCE
       rationale:
-        description: Reason for the review verdict
+        description: Reason for the future governance-review verdict
         required: true
-        default: Manual review receipt generated from verified CGE intake queue.
+        default: Experimental governance-review receipt. Not part of the active StegGhost sandbox-testing path.
       review_scope:
-        description: Scope of review
+        description: Scope of future governance review
         required: true
-        default: sandbox_receipt_queue_latest_item
+        default: future_governance_review_utility
 
 permissions:
   contents: write
@@ -36,10 +36,16 @@ jobs:
       - name: Checkout Org ingestion engine
         uses: actions/checkout@v4
 
+      - name: Declare experimental posture
+        run: |
+          echo "This workflow is an experimental future governance-review utility."
+          echo "It is not part of the active StegVerse-org SDK/LLM adapter → StegGhost ingestion sandbox-testing path."
+          echo "The active path uses declared sandbox test manifests and returns bounded test results."
+
       - name: Rebuild CGE queue when possible
         run: |
           if [ ! -d "reports/sandbox_receipts" ]; then
-            echo "::error::No committed reports/sandbox_receipts directory was found. Run 'Receive StegGhost Sandbox Receipt' first, then rerun this review workflow. The smoke test proves the path but does not commit smoke_reports as review evidence."
+            echo "::error::No committed reports/sandbox_receipts directory was found. This experimental review utility requires prior receipt evidence."
             exit 1
           fi
 
@@ -51,7 +57,7 @@ jobs:
           python tools/build_sandbox_receipt_queue.py --handoff-dir cge_handoff --queue-dir cge_intake
           python tools/verify_sandbox_receipt_queue.py --queue-dir cge_intake
 
-      - name: Create review receipt
+      - name: Create experimental review receipt
         run: |
           python tools/create_sandbox_review_receipt.py \
             --queue-dir cge_intake \
@@ -66,24 +72,24 @@ jobs:
           RATIONALE: ${{ inputs.rationale }}
           REVIEW_SCOPE: ${{ inputs.review_scope }}
 
-      - name: Verify review receipt
+      - name: Verify experimental review receipt
         run: |
           python tools/verify_sandbox_review_receipt.py \
             --review-dir review_receipts
 
-      - name: Commit review receipt
+      - name: Commit experimental review receipt
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "actions@github.com"
           git add reports/sandbox_receipts event_ledger cge_handoff cge_intake review_receipts
-          git diff --cached --quiet || git commit -m "review: record sandbox receipt review"
+          git diff --cached --quiet || git commit -m "review: record experimental governance review receipt"
           git push
 
-      - name: Upload review receipt
+      - name: Upload experimental review receipt
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: sandbox-receipt-review
+          name: experimental-governance-review-receipt
           path: |
             reports/sandbox_receipts/
             event_ledger/
