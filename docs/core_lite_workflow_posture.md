@@ -1,8 +1,8 @@
 # Core-Lite Workflow Posture
 
-This repository keeps only the active sandbox-testing workflow entry points in GitHub Actions.
+This repository keeps the active sandbox-testing workflow entry points narrow and fail-closed.
 
-## Active Workflows
+## Active Sandbox-Testing Workflows
 
 ```text
 Declared Sandbox Task Smoke Test
@@ -21,6 +21,14 @@ StegVerse-org SDK / LLM adapter
 → delivery receipt
 → result ready for submitter
 ```
+
+## Legacy Manual Check
+
+```text
+Run Ingestion Plan Check
+```
+
+This workflow is retained only as a manual plan/check surface. It no longer exposes install or orchestrate options through GitHub Actions.
 
 ## Removed From Active Workflow Surface
 
