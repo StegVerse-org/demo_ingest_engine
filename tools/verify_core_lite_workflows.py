@@ -8,6 +8,22 @@ ALLOWED_WORKFLOWS = {
 }
 
 WORKFLOW_DIR = Path(".github/workflows")
+STATUS_PATH = Path("reports/core_lite/latest_status.txt")
+
+
+def _write_status(actual: list[str], unexpected: list[str], missing: list[str]) -> None:
+    STATUS_PATH.parent.mkdir(parents=True, exist_ok=True)
+    status = "PASS" if not unexpected and not missing else "FAIL"
+    STATUS_PATH.write_text(
+        "\n".join([
+            f"status={status}",
+            f"allowed_workflows={','.join(sorted(ALLOWED_WORKFLOWS))}",
+            f"actual_workflows={','.join(actual)}",
+            f"unexpected_workflows={','.join(unexpected)}",
+            f"missing_required_workflows={','.join(missing)}",
+        ]) + "\n",
+        encoding="utf-8",
+    )
 
 
 def main() -> int:
@@ -18,6 +34,8 @@ def main() -> int:
     actual = sorted(p.name for p in WORKFLOW_DIR.iterdir() if p.is_file() and p.suffix in {".yml", ".yaml"})
     unexpected = [name for name in actual if name not in ALLOWED_WORKFLOWS]
     missing = [name for name in sorted(ALLOWED_WORKFLOWS) if name not in actual]
+
+    _write_status(actual, unexpected, missing)
 
     print("allowed_workflows=", sorted(ALLOWED_WORKFLOWS))
     print("actual_workflows=", actual)
