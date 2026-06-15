@@ -119,3 +119,22 @@ Initial rollout goal:
 - remove or archive unnecessary workflows
 - add README/docs pointers only after active path is confirmed
 ```
+
+Current rollout state:
+
+```text
+StegVerse-org/demo-sandbox: BASELINE_READY
+```
+
+Activation receipt:
+
+```text
+StegVerse-org/demo-sandbox/docs/core_lite_activation_receipt.md
+```
+
+Remaining activation work:
+
+```text
+- next workflow run reports PASS
+- root README pointer added if connector filtering allows
+```
