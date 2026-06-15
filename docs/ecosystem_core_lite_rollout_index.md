@@ -88,3 +88,28 @@ StegVerse-org/demo_ingest_engine is complete enough to serve as the Org-side sou
 StegGhost/entity-sandbox-runner is complete enough to serve as the recipient-side source pattern.
 Next candidate repos should be selected by active dependency on this bridge or workflow sprawl risk.
 ```
+
+## First Rollout Target
+
+```text
+StegVerse-org/demo-sandbox
+```
+
+Selection basis:
+
+```text
+- same organization as the Org-side bridge repo
+- adjacent to demo ingestion and sandbox bridge work
+- public repository with admin and push access available
+- suitable first target before applying the pattern to larger governance repos
+```
+
+Initial rollout goal:
+
+```text
+- inspect active workflow surface
+- identify minimal active path
+- add verifier/status output
+- remove or archive unnecessary workflows
+- add README/docs pointers only after active path is confirmed
+```
