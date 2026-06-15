@@ -1,0 +1,147 @@
+name: Result Intake Smoke Test
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - tools/intake_stegghost_result_receipt.py
+      - tools/build_delivery_receipt.py
+      - .github/workflows/result-intake-smoke-test.yml
+
+permissions:
+  contents: read
+
+jobs:
+  result-intake-smoke-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Org ingestion engine
+        uses: actions/checkout@v4
+
+      - name: Build valid StegGhost result receipt
+        run: |
+          mkdir -p smoke_reports/result_receipts smoke_reports/result_intake smoke_reports/result_delivery
+          cat > smoke_reports/result_receipts/valid_result.json <<'JSON'
+          {
+            "test_result_receipt_version": "1.0",
+            "created_at_utc": "2026-01-01T00:00:00Z",
+            "intake_receipt_path": "sandbox_intake_receipts/latest_stegghost_sandbox_intake_receipt.json",
+            "intake_receipt_sha256": "smoke",
+            "test": {
+              "name": "smoke_result_return",
+              "input_ref": "smoke"
+            },
+            "submitter": {
+              "interface": "StegVerse-org LLM adapter",
+              "submitter_type": "llm",
+              "submitter_ref": "smoke-test"
+            },
+            "result_status": "COMPLETED",
+            "result_summary": "Smoke result is bounded and ready for return.",
+            "bounded_result_only": true,
+            "ready_for_return": true,
+            "return_to_submitter": true
+          }
+          JSON
+
+      - name: Intake valid result receipt
+        run: |
+          python tools/intake_stegghost_result_receipt.py \
+            --result smoke_reports/result_receipts/valid_result.json \
+            --out-dir smoke_reports/result_intake/valid \
+            --intake-path-file smoke_reports/valid_result_intake_path.txt
+
+      - name: Assert valid result intake
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          receipt = json.loads(Path('smoke_reports/result_intake/valid/latest_stegghost_result_intake_receipt.json').read_text())
+          assert receipt['verdict'] == 'ACCEPTED_FOR_DELIVERY', receipt
+          assert receipt['accepted'] is True, receipt
+          assert receipt['delivery_allowed'] is True, receipt
+          assert receipt['bounded_result_only'] is True, receipt
+          assert receipt['ready_for_return'] is True, receipt
+          assert receipt['return_to_submitter'] is True, receipt
+          PY
+
+      - name: Build delivery receipt
+        run: |
+          python tools/build_delivery_receipt.py \
+            --intake smoke_reports/result_intake/valid/latest_stegghost_result_intake_receipt.json \
+            --out-dir smoke_reports/result_delivery/valid \
+            --delivery-path-file smoke_reports/delivery_receipt_path.txt
+
+      - name: Assert delivery receipt
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          receipt = json.loads(Path('smoke_reports/result_delivery/valid/latest_delivery_receipt.json').read_text())
+          assert receipt['delivery_status'] == 'READY_FOR_SUBMITTER', receipt
+          assert receipt['bounded_result_only'] is True, receipt
+          assert receipt['return_to_submitter'] is True, receipt
+          assert receipt['result_sha256'], receipt
+          PY
+
+      - name: Build blocked result receipt
+        run: |
+          cat > smoke_reports/result_receipts/blocked_result.json <<'JSON'
+          {
+            "test_result_receipt_version": "1.0",
+            "created_at_utc": "2026-01-01T00:00:00Z",
+            "result_status": "COMPLETED",
+            "result_summary": "This malformed result should fail closed.",
+            "bounded_result_only": false,
+            "ready_for_return": false,
+            "return_to_submitter": false
+          }
+          JSON
+
+      - name: Intake blocked result receipt fails closed
+        run: |
+          set +e
+          python tools/intake_stegghost_result_receipt.py \
+            --result smoke_reports/result_receipts/blocked_result.json \
+            --out-dir smoke_reports/result_intake/blocked \
+            --intake-path-file smoke_reports/blocked_result_intake_path.txt
+          status=$?
+          set -e
+          if [ "$status" -eq 0 ]; then
+            echo "::error::Blocked result receipt was accepted."
+            exit 1
+          fi
+
+      - name: Assert blocked result intake
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          receipt = json.loads(Path('smoke_reports/result_intake/blocked/latest_stegghost_result_intake_receipt.json').read_text())
+          assert receipt['verdict'] == 'FAIL_CLOSED', receipt
+          assert receipt['accepted'] is False, receipt
+          assert receipt['delivery_allowed'] is False, receipt
+          assert receipt['checks_failed'], receipt
+          PY
+
+      - name: Blocked intake cannot produce delivery receipt
+        run: |
+          set +e
+          python tools/build_delivery_receipt.py \
+            --intake smoke_reports/result_intake/blocked/latest_stegghost_result_intake_receipt.json \
+            --out-dir smoke_reports/result_delivery/blocked
+          status=$?
+          set -e
+          if [ "$status" -eq 0 ]; then
+            echo "::error::Blocked intake produced delivery receipt."
+            exit 1
+          fi
+
+      - name: Upload result intake smoke-test artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: result-intake-smoke-test
+          path: |
+            smoke_reports/
