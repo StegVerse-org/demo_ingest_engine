@@ -9,6 +9,43 @@ Targets: stegverse-demo-suite, demo_suite_runner, demo_ingest_engine
 
 Phone-first ingestion and orchestration engine for installing StegVerse demo bundles directly from GitHub Actions.
 
+## Active Sandbox-Testing Loop
+
+This repository is the Org-side authority and return boundary for the active cross-repo sandbox-testing loop with `StegGhost/entity-sandbox-runner`.
+
+Current active path:
+
+```text
+StegVerse-org SDK / LLM adapter
+→ declared sandbox test manifest
+→ ADMISSIBLE_TEST_TASK or FAIL_CLOSED
+→ route-only StegGhost task packet
+→ StegGhost bounded result receipt
+→ StegVerse-org result intake
+→ delivery receipt
+→ READY_FOR_SUBMITTER
+```
+
+Active workflow surface:
+
+```text
+Declared Sandbox Task Smoke Test
+Result Intake Smoke Test
+```
+
+Core invariant:
+
+```text
+No install authority
+No outside-sandbox authority
+No planning authority
+No conversation loop
+No repository mutation
+Only bounded result return to submitter
+```
+
+See [docs/active_sandbox_loop.md](docs/active_sandbox_loop.md) and [docs/core_lite_workflow_posture.md](docs/core_lite_workflow_posture.md).
+
 ## New in this release
 
 - **orchestrate mode** — plan all entities, install approved, cross-entity coordination
