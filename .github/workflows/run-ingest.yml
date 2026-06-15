@@ -1,30 +1,18 @@
-name: Run Ingestion
+name: Run Ingestion Plan Check
 
 on:
   workflow_dispatch:
     inputs:
-      mode:
-        description: plan | install | orchestrate
-        required: true
-        type: choice
-        options:
-          - plan
-          - install
-          - orchestrate
       source_path:
         description: path inside incoming/ or URL to artifact
         required: true
         default: incoming/bundle.zip
-      conflict_mode:
-        description: replace or archive
-        required: true
-        type: choice
-        options:
-          - replace
-          - archive
+
+permissions:
+  contents: read
 
 jobs:
-  ingest:
+  ingest-plan:
     runs-on: ubuntu-latest
 
     steps:
@@ -39,47 +27,28 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Download source if URL provided
+      - name: Resolve source
         run: |
+          mkdir -p incoming
           SOURCE="${{ inputs.source_path }}"
           if echo "$SOURCE" | grep -q "^https://"; then
-            echo "Downloading from URL: $SOURCE"
+            echo "Downloading source for plan check only: $SOURCE"
             curl -L -o incoming/remote_bundle.zip "$SOURCE"
             echo "REMOTE_SOURCE=incoming/remote_bundle.zip" >> $GITHUB_ENV
           else
-            echo "Using local path: $SOURCE"
+            echo "Using local source for plan check only: $SOURCE"
             echo "REMOTE_SOURCE=$SOURCE" >> $GITHUB_ENV
           fi
 
-      - name: Run ingestion
+      - name: Run plan-only ingestion check
         run: |
-          MODE="${{ inputs.mode }}"
-          SOURCE="${{ env.REMOTE_SOURCE }}"
+          python -m ingest.cli plan "${{ env.REMOTE_SOURCE }}"
 
-          if [ "$MODE" = "plan" ]; then
-            python -m ingest.cli plan "$SOURCE"
-          fi
-
-          if [ "$MODE" = "install" ]; then
-            if [ "${{ inputs.conflict_mode }}" = "archive" ]; then
-              python -m ingest.cli install "$SOURCE" --archive
-            else
-              python -m ingest.cli install "$SOURCE"
-            fi
-          fi
-
-          if [ "$MODE" = "orchestrate" ]; then
-            if [ "${{ inputs.conflict_mode }}" = "archive" ]; then
-              python -m ingest.cli orchestrate "$SOURCE" --archive
-            else
-              python -m ingest.cli orchestrate "$SOURCE"
-            fi
-          fi
-
-      - name: Upload reports
+      - name: Upload plan reports
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ingest-output
+          name: ingest-plan-output
           path: |
             reports/
             updated_targets/
