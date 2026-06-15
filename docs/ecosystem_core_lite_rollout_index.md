@@ -2,6 +2,12 @@
 
 This index identifies the files and checks that should be copied or adapted when applying the core-lite workflow posture to another ecosystem repository.
 
+Canonical bootstrap kit:
+
+```text
+docs/core_lite_bootstrap_kit.md
+```
+
 ## Source Pattern Repositories
 
 ```text
