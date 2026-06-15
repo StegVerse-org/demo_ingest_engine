@@ -138,3 +138,19 @@ Remaining activation work:
 - next workflow run reports PASS
 - root README pointer added if connector filtering allows
 ```
+
+## Rollout Target Availability Check
+
+Current installed repository search for `StegVerse-org` returned only:
+
+```text
+StegVerse-org/demo-sandbox
+```
+
+Operational consequence:
+
+```text
+- no second StegVerse-org rollout target is currently visible through the connector
+- continue activation hardening on demo-sandbox until additional repositories are available through connector access
+- next expansion target should be selected after the connector exposes another StegVerse-org repository or another explicitly named repo is provided
+```
