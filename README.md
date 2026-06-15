@@ -45,7 +45,7 @@ No repository mutation
 Only bounded result return to submitter
 ```
 
-See [docs/active_sandbox_loop.md](docs/active_sandbox_loop.md) and [docs/core_lite_workflow_posture.md](docs/core_lite_workflow_posture.md).
+See [docs/active_sandbox_loop.md](docs/active_sandbox_loop.md), [docs/core_lite_workflow_posture.md](docs/core_lite_workflow_posture.md), and [docs/core_lite_rollout_pattern.md](docs/core_lite_rollout_pattern.md).
 
 ## New in this release
 
