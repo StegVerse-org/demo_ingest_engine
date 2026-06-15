@@ -194,3 +194,4 @@ jobs:
           name: declared-sandbox-task-smoke-test
           path: |
             smoke_reports/
+            reports/core_lite/
