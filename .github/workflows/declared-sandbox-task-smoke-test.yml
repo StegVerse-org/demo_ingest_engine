@@ -7,6 +7,7 @@ on:
       - configs/stegghost_declared_task_policy.json
       - tools/validate_declared_sandbox_task.py
       - tools/build_stegghost_task_packet.py
+      - tools/verify_core_lite_workflows.py
       - .github/workflows/declared-sandbox-task-smoke-test.yml
 
 permissions:
@@ -19,6 +20,10 @@ jobs:
     steps:
       - name: Checkout Org ingestion engine
         uses: actions/checkout@v4
+
+      - name: Verify core-lite workflow posture
+        run: |
+          python tools/verify_core_lite_workflows.py
 
       - name: Build admissible declared sandbox test manifest
         run: |
