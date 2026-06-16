@@ -20,6 +20,12 @@ Framework manifest:
 docs/core_lite_framework_manifest.md
 ```
 
+Operator handoff:
+
+```text
+docs/core_lite_operator_handoff.md
+```
+
 ## Canonical framework docs
 
 ```text
