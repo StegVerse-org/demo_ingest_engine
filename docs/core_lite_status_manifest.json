@@ -1,0 +1,45 @@
+{
+  "schema": "stegverse.core_lite_status_manifest.v1",
+  "framework_status": [
+    "CORE_LITE_FRAMEWORK_READY",
+    "READY_FOR_NEXT_REPO_ADMISSION"
+  ],
+  "canonical_entry_point": "docs/core_lite_master_index.md",
+  "roadmap": {
+    "phase_1_bridge_foundation": "COMPLETE",
+    "phase_2_workflow_posture": "COMPLETE",
+    "phase_3_rollout_framework": "COMPLETE",
+    "phase_4_first_rollout_target": "ACTIVATION_PENDING",
+    "phase_5_next_repository_admission": "WAITING_FOR_DISCOVERY"
+  },
+  "queue": [
+    {
+      "repository": "StegVerse-org/demo_ingest_engine",
+      "state": "CORE_LITE_ACTIVE",
+      "role": "bridge_source_pattern"
+    },
+    {
+      "repository": "StegGhost/entity-sandbox-runner",
+      "state": "CORE_LITE_ACTIVE",
+      "role": "bridge_recipient_pattern"
+    },
+    {
+      "repository": "StegVerse-org/demo-sandbox",
+      "state": "ACTIVATION_PENDING",
+      "role": "first_posture_only_rollout_target"
+    },
+    {
+      "repository": "NEXT_VISIBLE_OR_NAMED_REPOSITORY",
+      "state": "WAITING_FOR_DISCOVERY",
+      "role": "next_rollout_candidate"
+    }
+  ],
+  "required_next_action": "Promote demo-sandbox after workflow PASS, then admit the next visible or explicitly named repository through the admission gate.",
+  "fail_closed_conditions": [
+    "repository_not_visible",
+    "repository_access_missing",
+    "repository_archived",
+    "repo_purpose_unbounded",
+    "active_workflow_surface_undeclared"
+  ]
+}
