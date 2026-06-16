@@ -9,6 +9,12 @@ CORE_LITE_FRAMEWORK_READY
 READY_FOR_NEXT_REPO_ADMISSION
 ```
 
+Current roadmap:
+
+```text
+docs/core_lite_current_roadmap.md
+```
+
 Ready receipt:
 
 ```text
