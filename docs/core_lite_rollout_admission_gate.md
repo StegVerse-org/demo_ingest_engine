@@ -2,6 +2,12 @@
 
 This document defines when a repository may enter the ecosystem core-lite rollout queue.
 
+Related lifecycle document:
+
+```text
+docs/core_lite_state_machine.md
+```
+
 ## Purpose
 
 Repository migration must be declared and bounded. A repo should not be modified merely because it exists. It must first pass an admission gate.
