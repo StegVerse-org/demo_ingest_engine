@@ -6,6 +6,13 @@ This document is the single navigation point for the Core-Lite rollout framework
 
 ```text
 CORE_LITE_FRAMEWORK_READY
+READY_FOR_NEXT_REPO_ADMISSION
+```
+
+Ready receipt:
+
+```text
+docs/core_lite_ready_receipt.md
 ```
 
 Activation seal:
