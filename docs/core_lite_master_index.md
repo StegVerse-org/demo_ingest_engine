@@ -2,6 +2,18 @@
 
 This document is the single navigation point for the Core-Lite rollout framework.
 
+## Framework status
+
+```text
+CORE_LITE_FRAMEWORK_READY
+```
+
+Activation seal:
+
+```text
+docs/core_lite_framework_activation_seal.md
+```
+
 ## Canonical framework docs
 
 ```text
