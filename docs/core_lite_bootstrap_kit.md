@@ -2,6 +2,12 @@
 
 This kit defines the reusable files and checks for applying the core-lite workflow posture to ecosystem repositories.
 
+Master index:
+
+```text
+docs/core_lite_master_index.md
+```
+
 ## Reference implementations
 
 ```text
