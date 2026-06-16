@@ -14,6 +14,12 @@ Activation seal:
 docs/core_lite_framework_activation_seal.md
 ```
 
+Framework manifest:
+
+```text
+docs/core_lite_framework_manifest.md
+```
+
 ## Canonical framework docs
 
 ```text
