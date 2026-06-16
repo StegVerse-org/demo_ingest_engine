@@ -15,6 +15,12 @@ Current roadmap:
 docs/core_lite_current_roadmap.md
 ```
 
+Roadmap execution checklist:
+
+```text
+docs/core_lite_roadmap_execution_checklist.md
+```
+
 Ready receipt:
 
 ```text
