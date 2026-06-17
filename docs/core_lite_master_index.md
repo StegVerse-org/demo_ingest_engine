@@ -15,6 +15,12 @@ Machine-readable status manifest:
 docs/core_lite_status_manifest.json
 ```
 
+Human-readable status manifest receipt:
+
+```text
+docs/core_lite_status_manifest_receipt.md
+```
+
 Current roadmap:
 
 ```text
