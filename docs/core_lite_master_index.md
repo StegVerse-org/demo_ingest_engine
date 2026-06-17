@@ -9,6 +9,12 @@ CORE_LITE_FRAMEWORK_READY
 READY_FOR_NEXT_REPO_ADMISSION
 ```
 
+Machine-readable status manifest:
+
+```text
+docs/core_lite_status_manifest.json
+```
+
 Current roadmap:
 
 ```text
