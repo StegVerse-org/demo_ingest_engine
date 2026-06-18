@@ -33,6 +33,12 @@ Roadmap execution checklist:
 docs/core_lite_roadmap_execution_checklist.md
 ```
 
+Intake template:
+
+```text
+docs/core_lite_next_repo_intake_template.md
+```
+
 Ready receipt:
 
 ```text
