@@ -1,0 +1,37 @@
+{
+  "step_id": "stegverse_org_ingestion_return",
+  "receipt_id": "org-return-receipt-001",
+  "receipt_type": "org return ingestion receipt",
+  "dataset_manifest_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "previous_receipts": [
+    {
+      "step_id": "human_input",
+      "receipt_id": "human-intake-receipt-001"
+    },
+    {
+      "step_id": "sdk_or_llm_adapter_intake",
+      "receipt_id": "sdk-intake-receipt-001"
+    },
+    {
+      "step_id": "stegverse_org_ingestion_outbound",
+      "receipt_id": "org-outbound-receipt-001"
+    },
+    {
+      "step_id": "stegghost_ingestion_cge_admission",
+      "receipt_id": "sandbox-cge-admission-receipt-001"
+    },
+    {
+      "step_id": "ephemeral_sandbox_batch",
+      "receipt_id": "ephemeral-sandbox-execution-receipt-001"
+    },
+    {
+      "step_id": "stegghost_ingestion_cge_return_validation",
+      "receipt_id": "sandbox-return-cge-receipt-001"
+    }
+  ],
+  "master_records": {
+    "action_receipt_sent": true,
+    "action_receipt_id": "mr-org-return-001",
+    "action_receipt_hash": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+  }
+}
