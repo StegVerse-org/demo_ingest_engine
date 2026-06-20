@@ -1,0 +1,10 @@
+[
+  {
+    "step_id": "human_input",
+    "receipt_id": "human-intake-receipt-001"
+  },
+  {
+    "step_id": "sdk_or_llm_adapter_intake",
+    "receipt_id": "sdk-intake-receipt-001"
+  }
+]
