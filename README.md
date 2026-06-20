@@ -10,6 +10,31 @@ Targets: stegverse-demo-suite, demo_suite_runner, demo_ingest_engine
 
 Phone-first ingestion and orchestration engine for installing StegVerse demo bundles directly from GitHub Actions.
 
+## Formal Testing Route Map
+
+`StegVerse-org/StegVerse-SDK` is the governed ingestion point for formal testing datasets. This repository remains the Org-side orchestration and return boundary for routed demo and sandbox tests.
+
+Required intake invariant:
+
+```text
+Dataset / fixture / governance artifact
+→ StegVerse-org/StegVerse-SDK ingestion
+→ manifest binding
+→ receipt binding
+→ declared formal testing route
+→ route-specific result receipt
+```
+
+Formal routes:
+
+| Route | Repository | Purpose |
+|------|------------|---------|
+| Public demo validation | `StegVerse-org/stegverse-demo-suite` | Reproducible public validation and explainable demo scenarios. |
+| Formal demo runner | `StegVerse-org/demo-suite-runner` | GCAT/BCAT formalism probes and deterministic runner scenarios. |
+| Rigorous sandbox testing | `StegGhost/entity-sandbox-runner` | Adversarial, entity, and bounded sandbox testing without outside-sandbox authority. |
+| Standing proof | `StegVerse-Labs/Standing-Proof-Engine` | Commit-time standing, stale-state replay, authority rebinding, and consequence-binding proof. |
+| Boundary / GLM case | `StegVerse-Labs/Boundary-Test` | Boundary declaration, non-claim preservation, and manifest composability validation. |
+
 ## Active Sandbox-Testing Loop
 
 This repository is the Org-side authority and return boundary for the active cross-repo sandbox-testing loop with `StegGhost/entity-sandbox-runner`.
@@ -18,7 +43,8 @@ Current active path:
 
 ```text
 StegVerse-org SDK / LLM adapter
-→ declared sandbox test manifest
+→ manifest-bound dataset or declared sandbox test manifest
+→ receipt-bound intake
 → ADMISSIBLE_TEST_TASK or FAIL_CLOSED
 → route-only StegGhost task packet
 → StegGhost bounded result receipt
@@ -103,7 +129,7 @@ See [docs/architecture/ARCHITECTURE.md](docs/architecture/ARCHITECTURE.md) for f
 
 | Upstream | Trigger | Consumes |
 |----------|---------|----------|
-| StegVerse-SDK | Release tag (`v*`) | Wheel + sdist artifacts |
+| StegVerse-SDK | Release tag (`v*`) or formal testing intake | Wheel, sdist artifacts, manifest-bound datasets, route declarations |
 | StegVerse-org | Workflow dispatch | Any bundle URL |
 | TV/TVC | Post-ingestion | Ephemeral secrets injection |
 | GCAT-BCAT-Engine | Approved installs | Deployment verification |
