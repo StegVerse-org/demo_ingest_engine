@@ -8,6 +8,8 @@ on:
       - 'scripts/gate_ingestion_handoff.py'
       - 'scripts/generate_ingestion_receipt.py'
       - 'scripts/run_org_ingestion_step.py'
+      - 'scripts/run_testing_data_loop_demo.py'
+      - 'scripts/validate_testing_data_loop_chain.py'
       - 'examples/org_outbound_ingestion_receipt.json'
       - 'examples/org_return_ingestion_receipt.json'
       - 'examples/previous_receipts_outbound.json'
@@ -23,6 +25,8 @@ on:
       - 'scripts/gate_ingestion_handoff.py'
       - 'scripts/generate_ingestion_receipt.py'
       - 'scripts/run_org_ingestion_step.py'
+      - 'scripts/run_testing_data_loop_demo.py'
+      - 'scripts/validate_testing_data_loop_chain.py'
       - 'examples/org_outbound_ingestion_receipt.json'
       - 'examples/org_return_ingestion_receipt.json'
       - 'examples/previous_receipts_outbound.json'
@@ -84,6 +88,11 @@ jobs:
             --previous-receipts examples/previous_receipts_outbound.json \
             --output /tmp/runner_outbound.json
           python scripts/validate_ingestion_receipts.py /tmp/runner_outbound.json
+
+      - name: Run end-to-end loop demo
+        run: |
+          python scripts/run_testing_data_loop_demo.py --output /tmp/testing_data_loop_chain.json
+          python scripts/validate_testing_data_loop_chain.py /tmp/testing_data_loop_chain.json
 
       - name: Gate outbound handoff
         run: python scripts/gate_ingestion_handoff.py examples/org_outbound_ingestion_receipt.json --next-step stegghost_ingestion_cge_admission
