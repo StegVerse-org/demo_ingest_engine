@@ -1,0 +1,35 @@
+name: Testing Data Ingestion Route Validation
+
+on:
+  push:
+    paths:
+      - 'docs/testing_data_ingestion_route.md'
+      - '.github/workflows/testing-data-ingestion-route-validate.yml'
+  pull_request:
+    paths:
+      - 'docs/testing_data_ingestion_route.md'
+      - '.github/workflows/testing-data-ingestion-route-validate.yml'
+  workflow_dispatch:
+
+jobs:
+  validate-ingestion-route-doc:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check corrected loop terms
+        run: |
+          grep -q 'StegVerse-org/StegVerse-SDK or LLM Adapter' docs/testing_data_ingestion_route.md
+          grep -q 'StegVerse-org ingestion' docs/testing_data_ingestion_route.md
+          grep -q 'StegGhost/entity-sandbox-runner ingestion/CGE' docs/testing_data_ingestion_route.md
+          grep -q 'ephemeral sandbox batch' docs/testing_data_ingestion_route.md
+          grep -q 'return validation' docs/testing_data_ingestion_route.md
+
+      - name: Check receipt and handoff terms
+        run: |
+          grep -q 'master-records' docs/testing_data_ingestion_route.md
+          grep -q 'outbound ingestion receipt' docs/testing_data_ingestion_route.md
+          grep -q 'return ingestion receipt' docs/testing_data_ingestion_route.md
+          grep -q 'testing-data-loop.schema.json' docs/testing_data_ingestion_route.md
+          grep -q 'testing-data-loop-handoff.schema.json' docs/testing_data_ingestion_route.md
