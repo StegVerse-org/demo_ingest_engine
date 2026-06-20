@@ -5,17 +5,21 @@ on:
     paths:
       - 'docs/testing_data_ingestion_route.md'
       - 'scripts/validate_ingestion_receipts.py'
+      - 'scripts/gate_ingestion_handoff.py'
       - 'examples/org_outbound_ingestion_receipt.json'
       - 'examples/org_return_ingestion_receipt.json'
       - 'tests/test_ingestion_receipts.py'
+      - 'tests/test_ingestion_handoff_gate.py'
       - '.github/workflows/testing-data-ingestion-route-validate.yml'
   pull_request:
     paths:
       - 'docs/testing_data_ingestion_route.md'
       - 'scripts/validate_ingestion_receipts.py'
+      - 'scripts/gate_ingestion_handoff.py'
       - 'examples/org_outbound_ingestion_receipt.json'
       - 'examples/org_return_ingestion_receipt.json'
       - 'tests/test_ingestion_receipts.py'
+      - 'tests/test_ingestion_handoff_gate.py'
       - '.github/workflows/testing-data-ingestion-route-validate.yml'
   workflow_dispatch:
 
@@ -53,5 +57,11 @@ jobs:
       - name: Validate return receipt
         run: python scripts/validate_ingestion_receipts.py examples/org_return_ingestion_receipt.json
 
-      - name: Run receipt tests
-        run: python -m pytest tests/test_ingestion_receipts.py
+      - name: Gate outbound handoff
+        run: python scripts/gate_ingestion_handoff.py examples/org_outbound_ingestion_receipt.json --next-step stegghost_ingestion_cge_admission
+
+      - name: Gate return handoff
+        run: python scripts/gate_ingestion_handoff.py examples/org_return_ingestion_receipt.json --next-step human_delivery
+
+      - name: Run receipt and handoff tests
+        run: python -m pytest tests/test_ingestion_receipts.py tests/test_ingestion_handoff_gate.py
