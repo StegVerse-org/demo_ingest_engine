@@ -1,0 +1,1 @@
+python tools/verify_core_lite_workflows.py

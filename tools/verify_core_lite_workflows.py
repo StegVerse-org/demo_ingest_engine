@@ -2,9 +2,10 @@ from __future__ import annotations
 
 from pathlib import Path
 
+# G17 (StegVerse-org/.github#166): the one stable surface. The former smoke-test
+# workflows are catalog groups (tools/tasks/task_catalog.json) the dispatcher runs.
 ALLOWED_WORKFLOWS = {
-    "declared-sandbox-task-smoke-test.yml",
-    "result-intake-smoke-test.yml",
+    "validation-dispatcher.yml",
 }
 
 WORKFLOW_DIR = Path(".github/workflows")

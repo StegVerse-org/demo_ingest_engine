@@ -1,0 +1,78 @@
+{
+ "schema": "stegverse.workflow-surface-registry/v1",
+ "goal_id": "G17-WORKFLOW-SURFACE-MINIMIZATION",
+ "repository": "StegVerse-org/demo_ingest_engine",
+ "policy_issue": "StegVerse-Labs/.github#167, #168; StegVerse-org/.github#166",
+ "preferred_repository_workflow_count_max": 2,
+ "exception_repository_workflow_count_max": 3,
+ "credential_authority": "TV/TVC only; no secret or token is referenced, introduced or moved",
+ "invariants": [
+  "Every workflow file is registered in surfaces[]; an unregistered one fails closed (tools/verify_core_lite_workflows.py and tests/test_workflow_surface_registry.py).",
+  "A new check is a group in tools/tasks/task_catalog.json, never a new workflow file.",
+  "No surface carries workflow_dispatch, schedule, repository_dispatch, issues or workflow_run."
+ ],
+ "unregistered_workflow_outcome": {
+  "disposition": "FAIL_CLOSED",
+  "failure_code": "UNREGISTERED_WORKFLOW_SURFACE",
+  "failed_predicate": "EVERY_WORKFLOW_FILE_IS_REGISTERED",
+  "required_evidence_or_repair": "register the file in control/workflow-surface-registry.json surfaces[] or fold it into tools/tasks/task_catalog.json",
+  "retry_entrypoint": "tests/test_workflow_surface_registry.py",
+  "owning_existing_goal": "G17-WORKFLOW-SURFACE-MINIMIZATION (StegVerse-Labs/.github#167/#168); StegVerse-org/.github#166",
+  "next_attempt": "the next pull request touching .github/workflows/"
+ },
+ "surfaces": [
+  {
+   "path": ".github/workflows/validation-dispatcher.yml",
+   "classification": "KEEP_STABLE_DISPATCHER",
+   "triggers": [
+    "pull_request",
+    "push"
+   ],
+   "permissions": {
+    "contents": "read"
+   }
+  }
+ ],
+ "folded": [
+  {
+   "workflow": ".github/workflows/declared-sandbox-task-smoke-test.yml",
+   "name": "Declared Sandbox Task Smoke Test",
+   "triggers_before": [
+    "workflow_dispatch",
+    "push"
+   ],
+   "classification": "FOLD",
+   "status": "DONE",
+   "catalog_group": "declared-sandbox-task-smoke-test.declared-task-smoke-test",
+   "verbatim_record": "tools/tasks/folded/declared-sandbox-task-smoke-test.yml",
+   "verbatim_sha256": "252897e7aeba7d7db72178f07e849ac17491e1a440a5eda0144c5aa906a602de"
+  },
+  {
+   "workflow": ".github/workflows/result-intake-smoke-test.yml",
+   "name": "Result Intake Smoke Test",
+   "triggers_before": [
+    "workflow_dispatch",
+    "push"
+   ],
+   "classification": "FOLD",
+   "status": "DONE",
+   "catalog_group": "result-intake-smoke-test.result-intake-smoke-test",
+   "verbatim_record": "tools/tasks/folded/result-intake-smoke-test.yml",
+   "verbatim_sha256": "cea7ca9c03f0622711dedcadee5d4313d758753a6dc9eaa930cf145514828823"
+  },
+  {
+   "workflow": ".github/workflows/testing-data-ingestion-route-validate.yml",
+   "name": "Testing Data Ingestion Route Validation",
+   "triggers_before": [
+    "push",
+    "pull_request",
+    "workflow_dispatch"
+   ],
+   "classification": "FOLD",
+   "status": "DONE",
+   "catalog_group": "testing-data-ingestion-route-validate.validate-ingestion-route",
+   "verbatim_record": "tools/tasks/folded/testing-data-ingestion-route-validate.yml",
+   "verbatim_sha256": "f0007ae0f4986a0f54502250fd5ceeace5519f5dcbb2e1e2f1ec5b29687ade85"
+  }
+ ]
+}

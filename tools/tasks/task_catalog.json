@@ -1,0 +1,294 @@
+{
+ "schema": "stegverse.task-catalog/v1",
+ "repository": "StegVerse-org/demo_ingest_engine",
+ "goal_id": "G17-WORKFLOW-SURFACE-MINIMIZATION",
+ "authority": "Rigel 2026-10-24 retroactive G17 enforcement (StegVerse-org/.github#166); pattern StegVerse-Labs/StegDB#60 (eab2e773)",
+ "dispatcher": ".github/workflows/validation-dispatcher.yml",
+ "runner": "tools/tasks/run_catalog.py",
+ "runner_source": "StegVerse-Labs/StegDB tools/tasks/run_catalog.py @ eab2e773271f3e63466a710f1b4555f677882848 (sha256 f741f30557888fd8e4852a52adfc65736a08898d49ade7519f6bcc2672921e9b), copied unmodified",
+ "rule": "Every check a folded workflow job ran is one group here; its step bodies are the original run blocks byte for byte, pinned by sha256. A new check is a new group (or a step in one), never a new workflow file.",
+ "path_filters": "Dropped: every group runs on every pull_request and push to main (a superset of the original path-filtered push runs).",
+ "repairs": [
+  "testing-data-ingestion-route-validate.validate-ingestion-route last step: 'python -m pytest' -> 'python tools/tasks/run_plain_tests.py' with the same four test files. pytest was never installed by the folded job (it failed at that step on its last runs, e.g. 27878685411); a stdlib collector adds no dependency.",
+  "tools/verify_core_lite_workflows.py ALLOWED_WORKFLOWS now names the one stable surface (validation-dispatcher.yml); it had also been failing closed on the unregistered third workflow."
+ ],
+ "folded_from_commit": "c14f1b4e0397a8e56259092ae1eb87948d3f1a28",
+ "groups": [
+  {
+   "id": "declared-sandbox-task-smoke-test.declared-task-smoke-test",
+   "source": {
+    "workflow": ".github/workflows/declared-sandbox-task-smoke-test.yml",
+    "workflow_name": "Declared Sandbox Task Smoke Test",
+    "job": "declared-task-smoke-test",
+    "job_name": null,
+    "commit": "c14f1b4",
+    "triggers_before": [
+     "workflow_dispatch",
+     "push"
+    ],
+    "permissions_before": {
+     "contents": "read"
+    }
+   },
+   "events": [
+    "pull_request",
+    "push"
+   ],
+   "env": {},
+   "steps": [
+    {
+     "name": "Verify core-lite workflow posture",
+     "run_file": "tools/tasks/steps/declared-sandbox-task-smoke-test.declared-task-smoke-test/01-verify-core-lite-workflow-posture.sh",
+     "run_sha256": "bff928fdea492fda0cf067807a57c66d2db33d28ba3777f0ccadbd48fadbef7d"
+    },
+    {
+     "name": "Build admissible declared sandbox test manifest",
+     "run_file": "tools/tasks/steps/declared-sandbox-task-smoke-test.declared-task-smoke-test/02-build-admissible-declared-sandbox-test-manifest.sh",
+     "run_sha256": "6ef895d7d3cedef6bf1eacdf27bd5c73fb95521f5aa9f3c87503c487d377ace6"
+    },
+    {
+     "name": "Validate admissible declared sandbox test manifest",
+     "run_file": "tools/tasks/steps/declared-sandbox-task-smoke-test.declared-task-smoke-test/03-validate-admissible-declared-sandbox-test-manifest.sh",
+     "run_sha256": "92cb86cda3afa7b9f43f44a693fd58cebb75ce4bcd28944f95f356ce2c44b156"
+    },
+    {
+     "name": "Assert admissible receipt",
+     "run_file": "tools/tasks/steps/declared-sandbox-task-smoke-test.declared-task-smoke-test/04-assert-admissible-receipt.sh",
+     "run_sha256": "e9555ce60286371dfc12da6b1e9e2369c2bffd02bbb96ec4609c95602506e229"
+    },
+    {
+     "name": "Build StegGhost task packet from admissible receipt",
+     "run_file": "tools/tasks/steps/declared-sandbox-task-smoke-test.declared-task-smoke-test/05-build-stegghost-task-packet-from-admissible-receipt.sh",
+     "run_sha256": "0cf50bbe18fbcca4cab6437bded00aa70179927ed775ba4bd6e8744356353072"
+    },
+    {
+     "name": "Assert StegGhost task packet",
+     "run_file": "tools/tasks/steps/declared-sandbox-task-smoke-test.declared-task-smoke-test/06-assert-stegghost-task-packet.sh",
+     "run_sha256": "63ab435ea81248c12a50181c76a065396a6d0b9a12374b893773e9e46a1d3436"
+    },
+    {
+     "name": "Build blocked non-test manifest",
+     "run_file": "tools/tasks/steps/declared-sandbox-task-smoke-test.declared-task-smoke-test/07-build-blocked-non-test-manifest.sh",
+     "run_sha256": "6d7b1afacf95140753fdb056f82bb2e0953d6801655a0519d37f77d86bb67b72"
+    },
+    {
+     "name": "Validate blocked non-test manifest fails closed",
+     "run_file": "tools/tasks/steps/declared-sandbox-task-smoke-test.declared-task-smoke-test/08-validate-blocked-non-test-manifest-fails-closed.sh",
+     "run_sha256": "78de5077a40aca86b2daed19149826e2d8e241e68b6d8caa3ddcd257ef17878a"
+    },
+    {
+     "name": "Assert blocked receipt fails closed",
+     "run_file": "tools/tasks/steps/declared-sandbox-task-smoke-test.declared-task-smoke-test/09-assert-blocked-receipt-fails-closed.sh",
+     "run_sha256": "d2851a53d2ff3904fcb14d8c31f379c22b7e600465a410cd576b8c509d08d266"
+    },
+    {
+     "name": "Assert blocked receipt cannot build task packet",
+     "run_file": "tools/tasks/steps/declared-sandbox-task-smoke-test.declared-task-smoke-test/10-assert-blocked-receipt-cannot-build-task-packet.sh",
+     "run_sha256": "803479df13149fecaa89e64765946a23e389bbcc894e5d7aad5ab77820328870"
+    }
+   ],
+   "artifacts": [
+    {
+     "name": "declared-sandbox-task-smoke-test",
+     "path": "smoke_reports/\nreports/core_lite/\n",
+     "if_no_files_found": "warn",
+     "if": "always()"
+    }
+   ],
+   "runner": {
+    "fetch_depth": "1",
+    "persist_credentials": "true",
+    "timeout_minutes": 15,
+    "artifact_name": "declared-sandbox-task-smoke-test",
+    "artifact_if_no_files_found": "warn"
+   }
+  },
+  {
+   "id": "result-intake-smoke-test.result-intake-smoke-test",
+   "source": {
+    "workflow": ".github/workflows/result-intake-smoke-test.yml",
+    "workflow_name": "Result Intake Smoke Test",
+    "job": "result-intake-smoke-test",
+    "job_name": null,
+    "commit": "c14f1b4",
+    "triggers_before": [
+     "workflow_dispatch",
+     "push"
+    ],
+    "permissions_before": {
+     "contents": "read"
+    }
+   },
+   "events": [
+    "pull_request",
+    "push"
+   ],
+   "env": {},
+   "steps": [
+    {
+     "name": "Build valid StegGhost result receipt",
+     "run_file": "tools/tasks/steps/result-intake-smoke-test.result-intake-smoke-test/01-build-valid-stegghost-result-receipt.sh",
+     "run_sha256": "3154d2423a078eb07f34a608226cfb5f91631e95d12687bca2f5867a197d2c9b"
+    },
+    {
+     "name": "Intake valid result receipt",
+     "run_file": "tools/tasks/steps/result-intake-smoke-test.result-intake-smoke-test/02-intake-valid-result-receipt.sh",
+     "run_sha256": "4abd86d6534fbbd4303f8644a83d630ab6123f3917a8c4b1adec65bcefde8403"
+    },
+    {
+     "name": "Assert valid result intake",
+     "run_file": "tools/tasks/steps/result-intake-smoke-test.result-intake-smoke-test/03-assert-valid-result-intake.sh",
+     "run_sha256": "08a1163ade7c1487888f0a4cf6d48d24b7414ccc3bcb24be2e68a4a1079be0e9"
+    },
+    {
+     "name": "Build delivery receipt",
+     "run_file": "tools/tasks/steps/result-intake-smoke-test.result-intake-smoke-test/04-build-delivery-receipt.sh",
+     "run_sha256": "3692a4e8f441f76c01bab62ef4b85705aba558c83bed635e549eb08dc1eef042"
+    },
+    {
+     "name": "Assert delivery receipt",
+     "run_file": "tools/tasks/steps/result-intake-smoke-test.result-intake-smoke-test/05-assert-delivery-receipt.sh",
+     "run_sha256": "6991ac4c5a9e4581cdc8776029a9e91717955a9b1e5155b078bde49b457e5d49"
+    },
+    {
+     "name": "Build blocked result receipt",
+     "run_file": "tools/tasks/steps/result-intake-smoke-test.result-intake-smoke-test/06-build-blocked-result-receipt.sh",
+     "run_sha256": "182b994613b43361b025514eac71ccfb5ac8d641c677cd8d1483b413936fb141"
+    },
+    {
+     "name": "Intake blocked result receipt fails closed",
+     "run_file": "tools/tasks/steps/result-intake-smoke-test.result-intake-smoke-test/07-intake-blocked-result-receipt-fails-closed.sh",
+     "run_sha256": "12030475ce13f074d88ce96b477d9b0e9b23aeb84a36a442cff35cc0bee3cb91"
+    },
+    {
+     "name": "Assert blocked result intake",
+     "run_file": "tools/tasks/steps/result-intake-smoke-test.result-intake-smoke-test/08-assert-blocked-result-intake.sh",
+     "run_sha256": "5bba4d7257b002aa842523e8ff00bc3f412d8e2f9679a0895709a3b127ecffbb"
+    },
+    {
+     "name": "Blocked intake cannot produce delivery receipt",
+     "run_file": "tools/tasks/steps/result-intake-smoke-test.result-intake-smoke-test/09-blocked-intake-cannot-produce-delivery-receipt.sh",
+     "run_sha256": "d792b2b79009d39a7d4cd85b6eac1953aae71918f3c3193353287a6ec970faf0"
+    }
+   ],
+   "artifacts": [
+    {
+     "name": "result-intake-smoke-test",
+     "path": "smoke_reports/\n",
+     "if_no_files_found": "warn",
+     "if": "always()"
+    }
+   ],
+   "runner": {
+    "fetch_depth": "1",
+    "persist_credentials": "true",
+    "timeout_minutes": 15,
+    "artifact_name": "result-intake-smoke-test",
+    "artifact_if_no_files_found": "warn"
+   }
+  },
+  {
+   "id": "testing-data-ingestion-route-validate.validate-ingestion-route",
+   "source": {
+    "workflow": ".github/workflows/testing-data-ingestion-route-validate.yml",
+    "workflow_name": "Testing Data Ingestion Route Validation",
+    "job": "validate-ingestion-route",
+    "job_name": null,
+    "commit": "c14f1b4",
+    "triggers_before": [
+     "push",
+     "pull_request",
+     "workflow_dispatch"
+    ],
+    "permissions_before": {}
+   },
+   "events": [
+    "pull_request",
+    "push"
+   ],
+   "env": {},
+   "steps": [
+    {
+     "name": "Check corrected loop terms",
+     "run_file": "tools/tasks/steps/testing-data-ingestion-route-validate.validate-ingestion-route/01-check-corrected-loop-terms.sh",
+     "run_sha256": "309e07e13a033082f9396358b0616177c5f61ae52878e634d4b931578cd40801"
+    },
+    {
+     "name": "Check receipt and handoff terms",
+     "run_file": "tools/tasks/steps/testing-data-ingestion-route-validate.validate-ingestion-route/02-check-receipt-and-handoff-terms.sh",
+     "run_sha256": "1b1a50495bd08fd9c4022537a6da244e49f6caeac02d2bb596faa96445e5458e"
+    },
+    {
+     "name": "Validate outbound receipt",
+     "run_file": "tools/tasks/steps/testing-data-ingestion-route-validate.validate-ingestion-route/03-validate-outbound-receipt.sh",
+     "run_sha256": "0a4bba643b38e2446956f3a1bd413b33e0201dd3cd9b54beff714ef5da6054b9"
+    },
+    {
+     "name": "Validate return receipt",
+     "run_file": "tools/tasks/steps/testing-data-ingestion-route-validate.validate-ingestion-route/04-validate-return-receipt.sh",
+     "run_sha256": "40fb95e533543176d440a9a5f8b8fb28417681507bbf26496de6e81f221e231b"
+    },
+    {
+     "name": "Generate outbound receipt",
+     "run_file": "tools/tasks/steps/testing-data-ingestion-route-validate.validate-ingestion-route/05-generate-outbound-receipt.sh",
+     "run_sha256": "e409937dba01901995bd11a8936ec53a5ca316a6d0bb57cfa99e58a0fc423381"
+    },
+    {
+     "name": "Run org ingestion step",
+     "run_file": "tools/tasks/steps/testing-data-ingestion-route-validate.validate-ingestion-route/06-run-org-ingestion-step.sh",
+     "run_sha256": "6b30489c9e8d7b6100dec948ac34f524e3e9aadd488ef85dae5b0f1b265eee93"
+    },
+    {
+     "name": "Run end-to-end loop demo",
+     "run_file": "tools/tasks/steps/testing-data-ingestion-route-validate.validate-ingestion-route/07-run-end-to-end-loop-demo.sh",
+     "run_sha256": "e59f644d713102b4087a13d90f8292e8125d54a43577518b2870d764b3c42a16"
+    },
+    {
+     "name": "Gate outbound handoff",
+     "run_file": "tools/tasks/steps/testing-data-ingestion-route-validate.validate-ingestion-route/08-gate-outbound-handoff.sh",
+     "run_sha256": "8c300000f7ff87c500556e335d8900478f48ef24c2e7fb80327fbbf228995f96"
+    },
+    {
+     "name": "Gate return handoff",
+     "run_file": "tools/tasks/steps/testing-data-ingestion-route-validate.validate-ingestion-route/09-gate-return-handoff.sh",
+     "run_sha256": "f6d2b025c8ef12750608a505add2ba2f7cb264945ae8c409ca4d2e5b1feafb90"
+    },
+    {
+     "name": "Run receipt, generator, runner, and handoff tests (stdlib collector; pytest was never installed)",
+     "run_file": "tools/tasks/steps/testing-data-ingestion-route-validate.validate-ingestion-route/10-run-receipt-generator-runner-and-handoff-tests.sh",
+     "run_sha256": "c3c91cb7ab4456dcdb04e2fc105b5b633d9bc1e4f9de581afd544d5320bbb4b8"
+    }
+   ],
+   "artifacts": [],
+   "runner": {
+    "fetch_depth": "1",
+    "persist_credentials": "true",
+    "timeout_minutes": 15,
+    "python_version": "3.x"
+   }
+  },
+  {
+   "id": "workflow-surface-registry.validate",
+   "catalog_addition": "G17 registry gate (no folded source workflow)",
+   "events": [
+    "pull_request",
+    "push"
+   ],
+   "env": {},
+   "steps": [
+    {
+     "name": "Workflow files equal the registered surfaces; catalog verifies ALLOW",
+     "run_file": "tools/tasks/steps/workflow-surface-registry.validate/01-registry.sh",
+     "run_sha256": "811824e88664923006be2eeb35632d710f5504145967f61632ad9e8fbdcb35ca"
+    }
+   ],
+   "artifacts": [],
+   "runner": {
+    "fetch_depth": "1",
+    "persist_credentials": "false",
+    "timeout_minutes": 10,
+    "python_version": "3.11"
+   }
+  }
+ ]
+}

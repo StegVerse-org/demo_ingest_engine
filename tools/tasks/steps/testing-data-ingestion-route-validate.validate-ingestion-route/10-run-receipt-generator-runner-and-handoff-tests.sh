@@ -1,0 +1,1 @@
+python tools/tasks/run_plain_tests.py tests/test_ingestion_receipts.py tests/test_generate_ingestion_receipt.py tests/test_run_org_ingestion_step.py tests/test_ingestion_handoff_gate.py
