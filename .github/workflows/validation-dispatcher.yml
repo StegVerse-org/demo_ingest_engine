@@ -10,16 +10,7 @@ name: Stable validator dispatcher
 # StegVerse-Labs/StegDB .github/workflows/validation-dispatcher.yml @ eab2e773
 # below this header. A new check is a catalog entry, never a new workflow file;
 # control/workflow-surface-registry.json fails closed on an unregistered workflow.
-on:
-# one matrix job per catalog group, each group being one job of a workflow that
-# was folded here, its steps the original run blocks byte for byte (pinned by
-# sha256 and refused by `run_catalog.py verify` on any drift).
-#
-# Model: StegVerse-Labs/.github .github/workflows/test-suite-ratchet.yml -
-# every pull request and every push to main, no path filter. A new check is a
-# catalog entry, never a new workflow file; control/workflow-surface-registry.json
-# fails closed on an unregistered workflow. Actions are pinned by full commit SHA
-# (tools/validate_workflow_security.py, STEGDB-SEC-001).
+# Actions are pinned by full commit SHA.
 on:
   pull_request:
   push:
