@@ -1,0 +1,1 @@
+python scripts/validate_ingestion_receipts.py examples/org_outbound_ingestion_receipt.json

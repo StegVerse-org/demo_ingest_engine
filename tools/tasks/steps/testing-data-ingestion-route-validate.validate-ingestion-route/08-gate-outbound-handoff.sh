@@ -1,0 +1,1 @@
+python scripts/gate_ingestion_handoff.py examples/org_outbound_ingestion_receipt.json --next-step stegghost_ingestion_cge_admission

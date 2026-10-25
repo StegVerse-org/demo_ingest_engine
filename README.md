@@ -1,7 +1,6 @@
 # StegVerse Demo Ingestion Engine
 
-![Declared Sandbox Task Smoke Test](https://github.com/StegVerse-org/demo_ingest_engine/actions/workflows/declared-sandbox-task-smoke-test.yml/badge.svg)
-![Result Intake Smoke Test](https://github.com/StegVerse-org/demo_ingest_engine/actions/workflows/result-intake-smoke-test.yml/badge.svg)
+![Stable validator dispatcher](https://github.com/StegVerse-org/demo_ingest_engine/actions/workflows/validation-dispatcher.yml/badge.svg)
 ![Python](https://img.shields.io/badge/python-3.11-blue)
 ![License](https://img.shields.io/github/license/StegVerse-org/demo_ingest_engine)
 
